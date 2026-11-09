@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>커밋 메시지 빌더</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Nanum+Gothic+Coding:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1B1D21;
+    --panel: #22252A;
+    --text: #D7D9DC;
+    --title: #FFFFFF;
+    --muted: #9AA0A8;
+    --faint: #6B717A;
+    --line: #2F333A;
+    --accent: #8FBF9F;
+    --warn: #E39A7F;
+    --warn-bg: #4A2E27;
+    --mono: "JetBrains Mono", "Nanum Gothic Coding", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 14px var(--mono); }
+  main {
+    max-width: 1080px; margin: 0 auto; padding: 10vh 32px 20vh;
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: start;
+  }
+
+  /* 입력 영역 */
+  .field { margin-bottom: 22px; }
+  .label { display: block; font-size: 12px; color: var(--accent); margin-bottom: 6px; }
+  .label::before { content: "# "; color: var(--faint); }
+  .label em { font-style: normal; color: var(--muted); margin-left: 6px; }
+  .label-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .label-row .label { margin-bottom: 0; }
+  input[type=text], textarea {
+    display: block; width: 100%; border: 1px solid var(--line); border-radius: 4px; outline: 0; background: var(--panel);
+    font: 400 14px/1.6 var(--mono); color: var(--text); padding: 7px 10px; caret-color: var(--accent);
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--muted); }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  textarea { resize: none; min-height: 4.4em; field-sizing: content; }
+  .types { display: flex; flex-wrap: wrap; gap: 6px; }
+  .types label { cursor: pointer; }
+  .types span { display: inline-block; font-size: 13px; color: var(--muted); padding: 3px 9px; border: 1px solid var(--line); border-radius: 4px; }
+  .types input { position: absolute; opacity: 0; pointer-events: none; }
+  .types input:checked + span { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+  .types input:focus-visible + span { outline: 1px dotted var(--muted); outline-offset: 2px; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .hint::before { content: "// "; color: var(--faint); }
+  .hint + .hint { margin-top: 2px; }
+  .hint code { color: var(--accent); font-family: var(--mono); }
+  .coauthor { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+  .coauthor button { align-self: flex-end; }
+  .link { background: none; border: 0; padding: 0; font: 400 12px var(--mono); color: var(--muted); cursor: pointer; }
+  .link:hover { color: var(--accent); }
+
+  /* 미리보기 영역 */
+  .preview { position: sticky; top: 10vh; }
+  .editor {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px 6px 0 0; padding: 16px 0;
+    font: 400 14px/1.75 var(--mono); min-height: 320px;
+  }
+  .row { display: flex; white-space: pre-wrap; min-height: 1.75em; }
+  .no { width: 44px; flex: none; text-align: right; padding-right: 16px; color: var(--faint); user-select: none; }
+  .code { padding-right: 20px; min-width: 0; overflow-wrap: anywhere; }
+  .row.title .code { color: var(--title); }
+  .over { color: var(--warn); background: var(--warn-bg); }
+  .ph { color: var(--faint); }
+  .comment .code { color: var(--faint); }
+  .tilde .no { color: var(--line); }
+  .status {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--line); border-radius: 0 0 6px 6px; padding: 6px 8px 6px 14px; font-size: 12px; color: var(--muted);
+  }
+  .status .file { color: var(--text); }
+  .count.over-limit { color: var(--warn); }
+  .copy {
+    border: 1px solid var(--accent); background: transparent; color: var(--accent); font: 400 12px var(--mono);
+    padding: 4px 12px; border-radius: 4px; cursor: pointer; min-width: 120px;
+  }
+  .copy:hover:not(:disabled) { background: var(--accent); color: var(--bg); }
+  .copy:disabled { border-color: var(--faint); color: var(--faint); cursor: default; }
+
+  @media (max-width: 820px) {
+    main { grid-template-columns: 1fr; gap: 40px; padding: 48px 16px 80px; }
+    .preview { position: static; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <form id="form" autocomplete="off" onsubmit="return false">
+    <div class="field">
+      <span class="label">type <em>필수</em></span>
+      <div class="types" id="types"></div>
+      <div class="hint" id="typeHint"></div>
+    </div>
+    <div class="field">
+      <label class="label" for="scope">scope</label>
+      <input type="text" id="scope" placeholder="예: 002-commit-builder">
+      <div class="hint">변경한 범위. 비우면 괄호 없이 조합</div>
+    </div>
+    <div class="field">
+      <label class="label" for="desc">description <em>필수</em></label>
+      <input type="text" id="desc" placeholder="예: 커밋 메시지 조합 화면 추가">
+      <div class="hint">무엇을 바꿨는지 한 줄 요약</div>
+    </div>
+    <div class="field">
+      <label class="label" for="body">body</label>
+      <textarea id="body" placeholder="예: 바꾼 이유"></textarea>
+      <div class="hint">바꾼 이유 등 추가 설명</div>
+    </div>
+    <div class="field">
+      <label class="label" for="breaking">BREAKING CHANGE</label>
+      <input type="text" id="breaking" placeholder="예: 설정 파일 형식을 YAML로 변경">
+      <div class="hint">기존 사용 방식과 호환되지 않는 변경 설명</div>
+      <div class="hint">BREAKING CHANGE 커밋은 <code>type(scope)</code> 뒤에 <code>!</code> 추가</div>
+    </div>
+    <div class="field">
+      <div class="label-row">
+        <span class="label">Co-Authored-By</span>
+        <button type="button" class="link" id="addCoauthor">+ 추가</button>
+      </div>
+      <div id="coauthors"></div>
+      <div class="hint">함께 작업한 사람. 이름과 이메일이 모두 있어야 조합</div>
+      <div class="hint">GitHub 계정에 등록된 이메일을 써야 GitHub에 표시</div>
+    </div>
+  </form>
+
+  <section class="preview">
+    <div class="editor" id="editor"></div>
+    <div class="status">
+      <span><span class="file">COMMIT_EDITMSG</span> · <span class="count" id="count"></span></span>
+      <button type="button" class="copy" id="copy">:wq 복사</button>
+    </div>
+  </section>
+</main>
+<script>
+var TYPES = [
+  ["feat", "새 기능"],
+  ["fix", "버그 수정"],
+  ["docs", "문서만 변경"],
+  ["style", "동작이 바뀌지 않는 포맷팅"],
+  ["refactor", "동작을 바꾸지 않는 구조 변경"],
+  ["test", "테스트 추가·수정"],
+  ["chore", "의존성, 도구 설정 등 유지보수"],
+  ["revert", "이전 커밋 되돌리기"]
+];
+var TITLE_LIMIT = 50;
+var COPY_LABEL = ":wq 복사";
+var GIT_COMMENTS = [
+  "# Please enter the commit message for your changes. Lines starting",
+  "# with '#' will be ignored. 이 줄은 복사되지 않아요."
+];
+
+var form = document.getElementById("form");
+var scopeInput = document.getElementById("scope");
+var descInput = document.getElementById("desc");
+var bodyInput = document.getElementById("body");
+var breakingInput = document.getElementById("breaking");
+var coauthorList = document.getElementById("coauthors");
+var editor = document.getElementById("editor");
+var count = document.getElementById("count");
+var copyButton = document.getElementById("copy");
+var copyTimer = null;
+
+document.getElementById("types").innerHTML = TYPES.map(function (t, i) {
+  return '<label><input type="radio" name="type" value="' + t[0] + '"' + (i === 0 ? " checked" : "") +
+    "><span>" + t[0] + "</span></label>";
+}).join("");
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+function addCoauthor() {
+  var pair = document.createElement("div");
+  pair.className = "coauthor";
+  pair.innerHTML =
+    '<input type="text" class="co-name" placeholder="이름">' +
+    '<input type="text" class="co-email" placeholder="이메일">' +
+    '<button type="button" class="link">- 삭제</button>';
+  pair.querySelector("button").addEventListener("click", function () {
+    pair.remove();
+    render();
+  });
+  coauthorList.appendChild(pair);
+  return pair;
+}
+
+// 입력값을 바꾸지 않고 형식에 필요한 기호만 붙여 title, body, footer로 나눈다.
+function compose() {
+  var type = form.querySelector("input[name=type]:checked").value;
+  var scope = scopeInput.value.trim();
+  var desc = descInput.value.trim();
+  var breaking = breakingInput.value.trim();
+  var head = type + (scope ? "(" + scope + ")" : "") + (breaking ? "!" : "") + ": ";
+
+  // body는 그대로 쓰고 앞뒤 빈 줄만 지운다.
+  var body = bodyInput.value.replace(/^(?:[ \t]*\n)+/, "").replace(/(?:\n[ \t]*)+$/, "");
+  var bodyLines = body.trim() ? body.split("\n") : [];
+
+  var footer = [];
+  if (breaking) footer.push("BREAKING CHANGE: " + breaking);
+  coauthorList.querySelectorAll(".coauthor").forEach(function (pair) {
+    var name = pair.querySelector(".co-name").value.trim();
+    var email = pair.querySelector(".co-email").value.trim();
+    if (name && email) footer.push("Co-Authored-By: " + name + " <" + email + ">");
+  });
+
+  return { type: type, head: head, desc: desc, title: head + desc, body: bodyLines, footer: footer };
+}
+
+function messageText(m) {
+  var parts = [m.title];
+  if (m.body.length) parts.push(m.body.join("\n"));
+  if (m.footer.length) parts.push(m.footer.join("\n"));
+  return parts.join("\n\n");
+}
+
+function rowHtml(no, html, cls) {
+  return '<div class="row' + (cls ? " " + cls : "") + '"><span class="no">' + no + '</span><span class="code">' + html + "</span></div>";
+}
+
+function render() {
+  var m = compose();
+  var typeInfo = TYPES.filter(function (t) { return t[0] === m.type; })[0];
+  document.getElementById("typeHint").textContent = typeInfo[1];
+
+  // 글자 수는 check.py의 파이썬 len과 같도록 코드 포인트로 센다.
+  var chars = Array.from(m.title);
+  var titleHtml;
+  if (m.desc) {
+    titleHtml = escapeHtml(chars.slice(0, TITLE_LIMIT).join(""));
+    if (chars.length > TITLE_LIMIT) {
+      titleHtml += '<span class="over">' + escapeHtml(chars.slice(TITLE_LIMIT).join("")) + "</span>";
+    }
+  } else {
+    titleHtml = escapeHtml(m.head) + '<span class="ph">description</span>';
+  }
+
+  var rows = [rowHtml(1, titleHtml, "title")];
+  var lines = [];
+  if (m.body.length) lines = lines.concat([""], m.body);
+  if (m.footer.length) lines = lines.concat([""], m.footer);
+  lines.forEach(function (line) {
+    rows.push(rowHtml(rows.length + 1, escapeHtml(line)));
+  });
+  [""].concat(GIT_COMMENTS).forEach(function (line) {
+    rows.push(rowHtml(rows.length + 1, escapeHtml(line), "comment"));
+  });
+  for (var i = 0; i < 3; i++) rows.push(rowHtml("~", "", "tilde"));
+  editor.innerHTML = rows.join("");
+
+  var length = m.desc ? chars.length : Array.from(m.head).length;
+  count.textContent = length + " / " + TITLE_LIMIT;
+  count.classList.toggle("over-limit", length > TITLE_LIMIT);
+  copyButton.disabled = !m.desc;
+}
+
+function showCopyResult(text) {
+  copyButton.textContent = text;
+  clearTimeout(copyTimer);
+  copyTimer = setTimeout(function () { copyButton.textContent = COPY_LABEL; }, 1800);
+}
+
+copyButton.addEventListener("click", function () {
+  var text = messageText(compose());
+  var request;
+  try {
+    request = navigator.clipboard.writeText(text);
+  } catch (e) {
+    request = Promise.reject(e);
+  }
+  request.then(
+    function () { showCopyResult("복사했어요"); },
+    function () { showCopyResult("복사하지 못했어요"); }
+  );
+});
+
+// field-sizing을 지원하지 않는 브라우저에서는 body 높이를 직접 늘린다.
+if (!(window.CSS && CSS.supports("field-sizing", "content"))) {
+  bodyInput.addEventListener("input", function () {
+    bodyInput.style.height = "auto";
+    bodyInput.style.height = bodyInput.scrollHeight + 2 + "px";
+  });
+}
+
+document.getElementById("addCoauthor").addEventListener("click", function () {
+  addCoauthor().querySelector(".co-name").focus();
+  render();
+});
+form.addEventListener("input", render);
+form.addEventListener("change", render);
+
+addCoauthor();
+render();
+</script>
+</body>
+</html>

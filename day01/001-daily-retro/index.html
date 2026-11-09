@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>오늘의 한 줄</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400&display=swap">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --text: #2B2B2B;
+      --meta: #A3A3A3;
+      --faint: #D6D6D6;
+      --cell-empty: #F0F0EE;
+
+      --m1: #A9B4CC; --m2: #B6ACC8; --m3: #C9B9D0; --m4: #E5B9C1;
+      --m5: #B7CDB4; --m6: #A8C8C2; --m7: #A3C3CE; --m8: #AEC4D9;
+      --m9: #DCCA9F; --m10: #D8B198; --m11: #C6AB9E; --m12: #AAB4BC;
+
+      --serif: "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
+      --sans: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
+      --cell: 8px;
+      --gap: 2px;
+      --radius: 2px;
+      --label-h: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 1.7;
+      padding-left: max(24px, env(safe-area-inset-left, 0px));
+      padding-right: max(24px, env(safe-area-inset-right, 0px));
+    }
+    button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; overflow: hidden;
+      clip: rect(0 0 0 0); white-space: nowrap;
+    }
+
+    /* 날짜, 입력창, 잔디를 한 덩어리로 세로 가운데보다 살짝 위에 둔다 */
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-block: 48px 14vh;
+    }
+
+    /* 날짜 */
+    .date { font-size: 13px; color: var(--meta); letter-spacing: .02em; display: flex; gap: 14px; align-items: baseline; }
+    .date button { color: var(--meta); }
+    .date button:hover { color: var(--text); }
+    .date button:focus-visible { outline: 1px solid var(--text); outline-offset: 3px; }
+
+    /* 입력창 */
+    form { margin-top: 28px; }
+    #line {
+      width: 100%;
+      display: block;
+      font: 400 22px/1.6 var(--serif);
+      color: var(--text);
+      background: transparent;
+      border: 0; outline: none; padding: 0;
+      resize: none; overflow: hidden;
+      caret-color: var(--text);
+    }
+    #line::placeholder { color: var(--faint); }
+
+    .below { margin-top: 14px; display: flex; justify-content: flex-end; font-size: 12px; color: var(--meta); min-height: 1.7em; }
+    .right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .counter { font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .3s, color .3s; }
+    form:focus-within .counter, .counter.show { opacity: 1; }
+    .counter.near { color: var(--text); }
+
+    /* 안내와 결과 문구는 같은 자리에 겹쳐 둔다 */
+    .slot { display: grid; justify-items: end; }
+    .slot > * { grid-area: 1 / 1; }
+    .hint { color: var(--meta); }
+    .hint:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .hint:focus-visible { outline: 1px solid var(--text); outline-offset: 3px; }
+    /* 자리를 비워 두고 숨겨서, 나타날 때 아래 잔디가 밀리지 않게 한다 */
+    .hint.off { visibility: hidden; }
+    form:focus-within .hint.off { visibility: visible; }
+    .hint.hide { opacity: 0; }
+    .hint .touch { display: none; }
+    @media (pointer: coarse) {
+      .hint .key { display: none; }
+      .hint .touch { display: inline; }
+    }
+    .status { color: var(--text); opacity: 0; transition: opacity .4s; pointer-events: none; }
+    .status.show { opacity: 1; }
+
+    /* 잔디 */
+    .grass { margin-top: 72px; }
+    .grass-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 12px; color: var(--meta); }
+    .count { font-variant-numeric: tabular-nums; }
+
+    .cal { display: flex; gap: 6px; }
+    .weekdays {
+      display: grid;
+      grid-template-rows: repeat(7, var(--cell));
+      gap: var(--gap);
+      padding-top: calc(var(--label-h) + var(--gap));
+      font-size: 9px;
+      line-height: var(--cell);
+      color: var(--meta);
+      flex: none;
+    }
+    .scroller { overflow-x: auto; scrollbar-width: none; min-width: 0; padding-bottom: 2px; }
+    .scroller::-webkit-scrollbar { display: none; }
+    /* 왼쪽에 칸이 더 있으면 왼쪽 끝을 흐리게 해서 밀어 볼 수 있다는 걸 보여 준다 */
+    .scroller.more-left {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px);
+      mask-image: linear-gradient(to right, transparent 0, #000 40px);
+    }
+    .weeks { display: flex; gap: var(--gap); width: max-content; }
+    .week { display: grid; grid-template-rows: var(--label-h) repeat(7, var(--cell)); gap: var(--gap); }
+    .week.month-start { margin-left: 3px; }
+    .month-label { font-size: 10px; line-height: 1; color: var(--meta); white-space: nowrap; width: 0; overflow: visible; }
+
+    .cell {
+      width: var(--cell); height: var(--cell);
+      display: grid; place-items: center;
+      border-radius: var(--radius);
+    }
+    .cell .mark { width: var(--cell); height: var(--cell); border-radius: var(--radius); background: var(--cell-empty); display: block; }
+    .cell.on .mark { background: var(--c); opacity: var(--o); transform: rotate(var(--rot)); }
+    .cell.today:not(.on) .mark { background: transparent; box-shadow: inset 0 0 0 1px var(--faint); }
+    .cell.selected { outline: 1px solid var(--text); outline-offset: 1px; }
+    .cell:focus-visible { outline: 1px solid var(--text); outline-offset: 1px; }
+    .cell.on.fresh .mark { animation: fill .7s ease-out both; }
+    @keyframes fill { from { opacity: 0; } to { opacity: var(--o); } }
+    @media (prefers-reduced-motion: reduce) {
+      .cell.on.fresh .mark { animation: none; }
+    }
+
+    .peek { margin-top: 12px; min-height: 3.4em; }
+    .peek .peek-date { font-size: 12px; color: var(--meta); }
+    .peek .peek-text { font: 400 15px/1.6 var(--serif); overflow-wrap: anywhere; }
+    .peek .peek-text.empty { font: 300 13px var(--sans); color: var(--faint); }
+
+    /* 1년이 다 들어가지 않는 화면에서는 칸을 키우고 가로 스크롤로 보여 준다 */
+    @media (max-width: 640px) {
+      :root { --cell: 10px; --gap: 3px; --radius: 2.5px; }
+    }
+    @media (max-width: 520px) {
+      main { padding-block: 40px 10vh; }
+      #line { font-size: 19px; }
+      .grass { margin-top: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="date">
+      <span id="date"></span>
+      <button type="button" id="back" hidden>오늘로</button>
+    </div>
+
+    <form id="form" autocomplete="off">
+      <label for="line" class="visually-hidden">한 줄 회고</label>
+      <textarea id="line" rows="1" maxlength="140" enterkeyhint="done" placeholder="오늘을 한 줄로"></textarea>
+      <div class="below">
+        <span class="right">
+          <span class="counter" id="counter">0 / 140</span>
+          <span class="slot">
+            <button class="hint off" type="submit" id="hint"><span class="key">Enter</span><span class="touch">완료</span>를 눌러 <span id="verb">저장</span></button>
+            <span class="status" id="status" aria-live="polite"></span>
+          </span>
+        </span>
+      </div>
+    </form>
+
+    <section class="grass" aria-label="지난 1년">
+      <div class="grass-head"><span>지난 1년</span><span class="count" id="count"></span></div>
+      <div class="cal">
+        <div class="weekdays" aria-hidden="true">
+          <span></span><span>월</span><span></span><span>수</span><span></span><span>금</span><span></span>
+        </div>
+        <div class="scroller" id="scroller"><div class="weeks" id="weeks"></div></div>
+      </div>
+      <div class="peek" id="peek" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY = "daily-retro:v1";
+      var MAX = 140;
+      var WEEKDAY = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+
+      var $ = function (id) { return document.getElementById(id); };
+      var input = $("line");
+      var form = $("form");
+
+      // ---- 날짜 ----
+
+      function pad(n) { return String(n).padStart(2, "0"); }
+
+      // toISOString()은 UTC 기준이라 쓰지 않고 로컬 날짜로 조립한다
+      function keyOf(d) {
+        return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+      }
+
+      function parseKey(k) {
+        var p = k.split("-");
+        return new Date(+p[0], +p[1] - 1, +p[2]);
+      }
+
+      function formatLong(d) {
+        return d.getFullYear() + "년 " + (d.getMonth() + 1) + "월 " + d.getDate() + "일 " + WEEKDAY[d.getDay()];
+      }
+
+      function formatShort(d) {
+        return (d.getMonth() + 1) + "월 " + d.getDate() + "일";
+      }
+
+      // 로컬 시간대 오프셋이 붙은 ISO 문자열 (예: 2026-10-14T16:10:00+09:00)
+      function localISO(d) {
+        var off = -d.getTimezoneOffset();
+        var sign = off >= 0 ? "+" : "-";
+        off = Math.abs(off);
+        return keyOf(d) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds()) +
+          sign + pad(Math.floor(off / 60)) + ":" + pad(off % 60);
+      }
+
+      // ---- 저장소 ----
+
+      function load() {
+        try {
+          var data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          return data && typeof data === "object" && !Array.isArray(data) ? data : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function persist() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function textOf(k) {
+        return entries[k] ? entries[k].text : "";
+      }
+
+      // ---- 상태 ----
+
+      var entries = load();
+      var todayKey = keyOf(new Date());
+      var selected = todayKey;
+      var cells = {};
+      var pendingSave = false;
+      var statusTimer = null;
+
+      // ---- 잔디 ----
+
+      // 날짜 문자열 해시. 칸마다 기울기와 진하기를 정하는 데 쓴다
+      function hash(s) {
+        var h = 2166136261;
+        for (var i = 0; i < s.length; i++) {
+          h ^= s.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+
+      function buildGrass() {
+        var weeks = $("weeks");
+        weeks.textContent = "";
+        cells = {};
+
+        var today = parseKey(todayKey);
+        // 마지막 열은 오늘이 속한 주이고, 그 앞으로 52주를 더 그린다
+        var start = new Date(today);
+        start.setDate(start.getDate() - today.getDay() - 52 * 7);
+
+        var days = [];
+        for (var d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+          days.push(new Date(d));
+        }
+
+        var lastLabelWeek = -10;
+        for (var w = 0; w * 7 < days.length; w++) {
+          var slice = days.slice(w * 7, w * 7 + 7);
+          var col = document.createElement("div");
+          col.className = "week";
+
+          var first = null;
+          for (var i = 0; i < slice.length; i++) {
+            if (slice[i].getDate() === 1) { first = slice[i]; break; }
+          }
+          if (first && w > 0) col.classList.add("month-start");
+
+          // 월 이름은 1일이 들어 있는 열 위에 쓴다. 첫 열은 다음 달 이름과 겹치지 않을 때만 쓴다
+          var label = document.createElement("span");
+          label.className = "month-label";
+          var labelDate = first || (w === 0 ? slice[0] : null);
+          if (labelDate && w - lastLabelWeek >= 3) {
+            // 첫 열이 달 중간에서 시작하면, 다음 달 이름과 3열 이상 떨어질 때만 쓴다
+            if (w === 0 && !first) {
+              var d0 = slice[0];
+              var daysInMonth = new Date(d0.getFullYear(), d0.getMonth() + 1, 0).getDate();
+              if (daysInMonth - d0.getDate() < 20) labelDate = null;
+            }
+            if (labelDate) {
+              label.textContent = (labelDate.getMonth() + 1) + "월";
+              lastLabelWeek = w;
+            }
+          }
+          col.appendChild(label);
+
+          slice.forEach(function (day) { col.appendChild(makeCell(day)); });
+          weeks.appendChild(col);
+        }
+
+        Object.keys(cells).forEach(function (k) { paint(k, false); });
+      }
+
+      function makeCell(day) {
+        var k = keyOf(day);
+        var h = hash(k);
+        var cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "cell" + (k === todayKey ? " today" : "");
+        cell.style.setProperty("--c", "var(--m" + (day.getMonth() + 1) + ")");
+        cell.style.setProperty("--rot", ((h >> 3) % 3) - 1 + "deg");
+        cell.style.setProperty("--o", (0.9 + ((h >> 8) % 11) / 100).toFixed(2));
+
+        var mark = document.createElement("span");
+        mark.className = "mark";
+        cell.appendChild(mark);
+
+        cell.addEventListener("mouseenter", function () { peek(k); });
+        cell.addEventListener("focus", function () { peek(k); });
+        cell.addEventListener("click", function () { select(k); });
+
+        cells[k] = cell;
+        return cell;
+      }
+
+      function paint(k, fresh) {
+        var cell = cells[k];
+        if (!cell) return;
+        var on = !!entries[k];
+        cell.classList.toggle("on", on);
+        cell.classList.remove("fresh");
+        if (on && fresh) {
+          void cell.offsetWidth; // 애니메이션을 다시 재생하려고 reflow를 일으킨다
+          cell.classList.add("fresh");
+        }
+        cell.setAttribute("aria-label", formatShort(parseKey(k)) + ", " + (on ? entries[k].text : "회고 없음"));
+      }
+
+      function peek(k) {
+        var box = $("peek");
+        box.textContent = "";
+        var date = document.createElement("div");
+        date.className = "peek-date";
+        date.textContent = formatShort(parseKey(k)) + (k === todayKey ? " · 오늘" : "");
+        var text = document.createElement("div");
+        text.className = "peek-text" + (entries[k] ? "" : " empty");
+        text.textContent = entries[k] ? entries[k].text : "비어 있는 날";
+        box.appendChild(date);
+        box.appendChild(text);
+      }
+
+      function renderCount() {
+        var n = 0;
+        Object.keys(entries).forEach(function (k) { if (cells[k]) n++; });
+        $("count").textContent = n + "일";
+      }
+
+      // ---- 입력 영역 ----
+
+      function renderEntry() {
+        $("date").textContent = formatLong(parseKey(selected));
+        $("back").hidden = selected === todayKey;
+        input.value = textOf(selected);
+        input.placeholder = selected === todayKey ? "오늘을 한 줄로" : "이날을 한 줄로";
+        Object.keys(cells).forEach(function (k) {
+          cells[k].classList.toggle("selected", k === selected && k !== todayKey);
+        });
+        refresh();
+      }
+
+      function select(k) {
+        selected = k;
+        renderEntry();
+        input.focus();
+      }
+
+      function isDirty() {
+        return input.value.trim() !== textOf(selected);
+      }
+
+      // 입력창 높이, 글자 수, 안내 문구를 지금 내용에 맞춘다
+      function refresh() {
+        input.style.height = "auto";
+        input.style.height = input.scrollHeight + "px";
+
+        var n = input.value.length;
+        var counter = $("counter");
+        counter.textContent = n + " / " + MAX;
+        counter.classList.toggle("near", n >= MAX - 20);
+        counter.classList.toggle("show", n >= MAX - 20);
+
+        $("hint").classList.toggle("off", !isDirty());
+        // 새로 쓰면 저장, 이미 쓴 날을 고치면 수정, 다 지우면 삭제
+        $("verb").textContent = !entries[selected] ? "저장" : (input.value.trim() ? "수정" : "삭제");
+      }
+
+      function showStatus(msg) {
+        var status = $("status");
+        var hint = $("hint");
+        clearTimeout(statusTimer);
+        status.textContent = msg;
+        status.classList.add("show");
+        hint.classList.add("hide");
+        statusTimer = setTimeout(function () {
+          status.classList.remove("show");
+          hint.classList.remove("hide");
+        }, 1800);
+      }
+
+      function save() {
+        if (!isDirty()) return;
+
+        var text = input.value.trim();
+        var had = !!entries[selected];
+        var prev = entries[selected];
+
+        if (text) entries[selected] = { text: text, updatedAt: localISO(new Date()) };
+        else delete entries[selected];
+
+        if (!persist()) {
+          // 저장하지 못했으면 메모리 상태도 되돌린다
+          if (prev) entries[selected] = prev; else delete entries[selected];
+          showStatus("저장하지 못했어요");
+          return;
+        }
+
+        paint(selected, !!text);
+        renderCount();
+        showStatus(!text ? "삭제했어요" : (had ? "수정했어요" : "저장했어요"));
+        input.value = text;
+        refresh();
+        input.blur();
+        peek(selected);
+      }
+
+      input.addEventListener("input", function () {
+        // 한 줄 회고라 줄바꿈은 받지 않는다 (붙여넣기 포함)
+        if (/[\r\n]/.test(input.value)) input.value = input.value.replace(/[\r\n]+/g, " ");
+        refresh();
+      });
+
+      // 한글 조합 중 Enter는 브라우저마다 이벤트 순서가 달라서,
+      // 조합 중이면 표시만 해 두고 조합이 끝난 뒤 저장한다. save()는 여러 번 불려도 결과가 같다.
+      input.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        if (e.isComposing) { pendingSave = true; return; }
+        save();
+      });
+
+      input.addEventListener("compositionend", function () {
+        if (!pendingSave) return;
+        pendingSave = false;
+        setTimeout(save, 0);
+      });
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        save();
+      });
+
+      $("back").addEventListener("click", function () { select(todayKey); });
+
+      $("scroller").addEventListener("mouseleave", function () { $("peek").textContent = ""; });
+
+      window.addEventListener("resize", function () {
+        refresh();
+        scrollToToday();
+      });
+
+      // ---- 가로 스크롤 (좁은 화면) ----
+
+      var scroller = $("scroller");
+
+      function updateEdge() {
+        scroller.classList.toggle("more-left", scroller.scrollLeft > 1);
+      }
+
+      function scrollToToday() {
+        scroller.scrollLeft = scroller.scrollWidth;
+        updateEdge();
+      }
+
+      scroller.addEventListener("scroll", updateEdge, { passive: true });
+
+      // ---- 자정이 지났을 때 ----
+
+      // 페이지를 켜 둔 채 날짜가 바뀌면, 쓰던 내용이 없을 때만 오늘 기준으로 다시 그린다
+      function checkDayChange() {
+        var now = keyOf(new Date());
+        if (now === todayKey || isDirty()) return;
+        var wasToday = selected === todayKey;
+        todayKey = now;
+        if (wasToday) selected = todayKey;
+        buildGrass();
+        renderEntry();
+        renderCount();
+        scrollToToday();
+      }
+
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) checkDayChange();
+      });
+      window.addEventListener("focus", checkDayChange);
+      setInterval(checkDayChange, 60 * 1000);
+
+      // ---- 시작 ----
+
+      buildGrass();
+      renderEntry();
+      renderCount();
+      input.focus();
+      requestAnimationFrame(scrollToToday);
+    })();
+  </script>
+</body>
+</html>
