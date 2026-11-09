@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko" data-mode="focus" data-status="idle">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f5efe6" />
+  <title>Tempo · 뽀모도로</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23c2410c' stroke-opacity='.25' stroke-width='5'/%3E%3Cpath d='M16 3a13 13 0 1 1-13 13' fill='none' stroke='%23c2410c' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#primaryBtn">타이머 조작으로 바로 가기</a>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Tempo</span>
+        <span class="brand-sub">뽀모도로 타이머</span>
+      </div>
+      <button type="button" class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-controls="settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+        <span>설정</span>
+      </button>
+    </header>
+
+    <main class="layout">
+      <section class="timer-card" id="timerCard" aria-labelledby="modeLabel">
+        <div class="notice" id="notice" hidden>
+          <span class="notice-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg>
+          </span>
+          <div class="notice-body">
+            <p class="notice-title" id="noticeTitle"></p>
+            <p class="notice-text" id="noticeText"></p>
+          </div>
+          <button type="button" class="notice-close" id="noticeClose" aria-label="알림 닫기">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+
+        <div class="mode-chip">
+          <span class="mode-dot" aria-hidden="true"></span>
+          <h1 id="modeLabel">집중 시간</h1>
+          <span class="status-pill" id="statusPill">대기 중</span>
+        </div>
+
+        <div class="dial" id="dial" role="progressbar" aria-label="현재 세션 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <svg class="dial-svg" viewBox="0 0 320 320" aria-hidden="true">
+            <g id="ticks" class="ticks"></g>
+            <circle class="arc-track" cx="160" cy="160" r="128" />
+            <circle class="arc" id="arc" cx="160" cy="160" r="128" pathLength="100" />
+          </svg>
+          <div class="dial-center">
+            <div class="time" id="time" role="timer" aria-live="off" aria-atomic="true">25:00</div>
+            <div class="dial-sub" id="dialSub">25분 세션</div>
+          </div>
+        </div>
+
+        <p class="hint" id="hint"></p>
+
+        <div class="controls">
+          <button type="button" class="ghost-btn" id="resetBtn" aria-keyshortcuts="R">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></svg>
+            <span>초기화</span>
+          </button>
+          <button type="button" class="primary-btn" id="primaryBtn" aria-keyshortcuts="Space">
+            <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            <svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 5.5v13M15.5 5.5v13"/></svg>
+            <span id="primaryLabel">집중 시작</span>
+          </button>
+          <button type="button" class="ghost-btn" id="skipBtn" aria-keyshortcuts="N">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 6l8 6-8 6z"/><path d="M18 6v12"/></svg>
+            <span>건너뛰기</span>
+          </button>
+        </div>
+
+        <p class="up-next" id="upNext"></p>
+      </section>
+
+      <aside class="side">
+        <section class="panel" aria-labelledby="cycleHeading">
+          <div class="panel-head">
+            <h2 id="cycleHeading">이번 사이클</h2>
+            <span class="panel-meta" id="cycleMeta">0 / 4</span>
+          </div>
+          <ol class="strip" id="strip" aria-describedby="cycleText"></ol>
+          <p class="panel-text" id="cycleText"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="todayHeading">
+          <div class="panel-head">
+            <h2 id="todayHeading">오늘의 기록</h2>
+            <span class="panel-meta" id="todayDate"></span>
+          </div>
+          <dl class="stats">
+            <div class="stat stat-main">
+              <dt>완료한 집중</dt>
+              <dd><span id="statToday">0</span><small>회</small></dd>
+            </div>
+            <div class="stat">
+              <dt>집중한 시간</dt>
+              <dd id="statMinutes">0분</dd>
+            </div>
+            <div class="stat">
+              <dt>전체 누적</dt>
+              <dd><span id="statTotal">0</span><small>회</small></dd>
+            </div>
+          </dl>
+          <ul class="log" id="log" aria-label="오늘 완료한 집중 세션"></ul>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="shortcuts" aria-label="키보드 단축키">
+      <span><kbd>Space</kbd> 시작 · 일시정지</span>
+      <span><kbd>R</kbd> 초기화</span>
+      <span><kbd>N</kbd> 건너뛰기</span>
+      <span><kbd>,</kbd> 설정</span>
+    </footer>
+  </div>
+
+  <dialog class="sheet" id="settings" aria-labelledby="settingsTitle">
+    <form method="dialog" id="settingsForm" novalidate>
+      <div class="sheet-head">
+        <h2 id="settingsTitle">설정</h2>
+        <button type="button" class="icon-btn icon-only" id="settingsClose" aria-label="설정 닫기">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <fieldset class="durations">
+        <legend>세션 길이 <span>(분)</span></legend>
+        <div class="field" data-key="focus">
+          <label for="inFocus"><span class="swatch sw-focus" aria-hidden="true"></span>집중</label>
+          <div class="stepper">
+            <button type="button" class="step" data-step="-1" aria-label="집중 시간 1분 줄이기">−</button>
+            <input id="inFocus" name="focus" type="number" inputmode="numeric" min="1" max="120" step="1" required aria-describedby="errFocus" />
+            <button type="button" class="step" data-step="1" aria-label="집중 시간 1분 늘리기">+</button>
+          </div>
+          <p class="field-error" id="errFocus"></p>
+        </div>
+        <div class="field" data-key="short">
+          <label for="inShort"><span class="swatch sw-short" aria-hidden="true"></span>짧은 휴식</label>
+          <div class="stepper">
+            <button type="button" class="step" data-step="-1" aria-label="짧은 휴식 1분 줄이기">−</button>
+            <input id="inShort" name="short" type="number" inputmode="numeric" min="1" max="60" step="1" required aria-describedby="errShort" />
+            <button type="button" class="step" data-step="1" aria-label="짧은 휴식 1분 늘리기">+</button>
+          </div>
+          <p class="field-error" id="errShort"></p>
+        </div>
+        <div class="field" data-key="long">
+          <label for="inLong"><span class="swatch sw-long" aria-hidden="true"></span>긴 휴식</label>
+          <div class="stepper">
+            <button type="button" class="step" data-step="-1" aria-label="긴 휴식 1분 줄이기">−</button>
+            <input id="inLong" name="long" type="number" inputmode="numeric" min="1" max="90" step="1" required aria-describedby="errLong" />
+            <button type="button" class="step" data-step="1" aria-label="긴 휴식 1분 늘리기">+</button>
+          </div>
+          <p class="field-error" id="errLong"></p>
+        </div>
+        <p class="field-note" id="runningNote" hidden>진행 중인 세션은 그대로 두고, 바뀐 시간은 다음 세션부터 적용돼요.</p>
+        <button type="button" class="text-btn" id="defaultsBtn">기본값(25 · 5 · 15)으로 되돌리기</button>
+      </fieldset>
+
+      <fieldset class="toggles">
+        <legend>알림</legend>
+        <div class="switch-row">
+          <label class="switch">
+            <input type="checkbox" id="inSound" />
+            <span class="switch-ui" aria-hidden="true"></span>
+            <span class="switch-text">완료 소리<small>세션이 끝나면 짧은 차임을 울려요</small></span>
+          </label>
+          <button type="button" class="text-btn" id="previewSound">미리 듣기</button>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="inNotify" />
+          <span class="switch-ui" aria-hidden="true"></span>
+          <span class="switch-text">브라우저 알림<small id="notifyHelp">다른 탭에 있을 때 완료를 알려줘요</small></span>
+        </label>
+      </fieldset>
+
+      <fieldset class="danger">
+        <legend>기록</legend>
+        <button type="button" class="text-btn danger-btn" id="clearStats">완료 기록 모두 지우기</button>
+      </fieldset>
+
+      <div class="sheet-actions">
+        <button type="button" class="ghost-btn wide" id="settingsCancel">취소</button>
+        <button type="submit" class="primary-btn wide" id="settingsSave">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span id="toastText"></span>
+    <button type="button" class="toast-action" id="toastAction" hidden>되돌리기</button>
+  </div>
+  <div class="sr-only" id="live" aria-live="assertive" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

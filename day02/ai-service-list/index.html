@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 서비스 모음</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero container">
+    <h1 class="title">AI 서비스 모음<span class="dot">.</span></h1>
+    <p class="subtitle">분야별로 정리한 AI 서비스. 카드를 누르면 자세한 내용을 볼 수 있어요.</p>
+  </header>
+
+  <div class="toolbar-bar">
+    <div class="container toolbar">
+      <div id="filters" class="filters" role="group" aria-label="분야 필터"></div>
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="이름, 소개, 추천 용도로 검색" autocomplete="off">
+      </label>
+    </div>
+  </div>
+
+  <main class="container">
+    <p id="result-count" class="result-count" aria-live="polite"></p>
+    <ul id="grid" class="grid"></ul>
+    <p id="empty" class="empty" hidden>검색 결과가 없어요. 다른 단어로 찾아보세요.</p>
+  </main>
+
+  <dialog id="detail" class="detail" aria-labelledby="detail-name">
+    <div class="detail-inner">
+      <button type="button" class="close" id="detail-close" aria-label="닫기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="detail-meta">
+        <span class="tag" id="detail-category"></span>
+        <span class="price-chip" id="detail-price"></span>
+      </div>
+      <h2 id="detail-name" class="detail-name"></h2>
+      <p id="detail-summary" class="detail-summary"></p>
+
+      <section class="detail-section">
+        <h3>추천 용도</h3>
+        <p id="detail-use"></p>
+      </section>
+      <div class="detail-columns">
+        <section class="detail-section">
+          <h3>장점</h3>
+          <ul id="detail-pros" class="bullets pros"></ul>
+        </section>
+        <section class="detail-section">
+          <h3>아쉬운 점</h3>
+          <ul id="detail-cons" class="bullets cons"></ul>
+        </section>
+      </div>
+
+      <section class="detail-section" id="detail-reviews-section">
+        <h3>써본 사람 후기</h3>
+        <div id="detail-reviews" class="reviews"></div>
+      </section>
+
+      <a id="detail-link" class="visit" target="_blank" rel="noopener noreferrer">사이트 방문하기 ↗</a>
+    </div>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

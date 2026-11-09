@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f3ed" />
+    <meta name="description" content="하루의 리듬을 만드는 뽀모도로 타이머, 모아." />
+    <title>모아 — 집중의 리듬(Codex Pomodoro)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="모아 홈">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+          <span>moa<span class="brand-period">.</span></span>
+        </a>
+        <span class="topbar-note">작은 집중이 쌓이는 시간</span>
+        <span class="today-pill"><span class="today-dot"></span><span id="today-label">나의 집중 기록</span></span>
+      </header>
+
+      <main class="main-grid">
+        <section class="timer-panel" aria-labelledby="page-title">
+          <div class="panel-topline">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line"></span> YOUR FOCUS SPACE</p>
+              <h1 id="page-title">지금 이 순간에<br /><em>집중해요.</em></h1>
+            </div>
+            <div class="session-index" id="session-index">01 <span>/ 04</span></div>
+          </div>
+
+          <div class="mode-switch" role="group" aria-label="세션 종류">
+            <button type="button" class="mode-button active" data-mode="focus" aria-pressed="true">집중</button>
+            <button type="button" class="mode-button" data-mode="short" aria-pressed="false">짧은 휴식</button>
+            <button type="button" class="mode-button" data-mode="long" aria-pressed="false">긴 휴식</button>
+          </div>
+
+          <div class="timer-stage">
+            <div class="timer-ring" id="timer-ring" role="progressbar" aria-label="현재 세션 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="timer-inner">
+                <span class="timer-overline" id="timer-overline">FOCUS SESSION</span>
+                <div class="time" id="time" role="timer" aria-live="off">25:00</div>
+                <span class="timer-caption" id="timer-caption">시작할 준비가 되었어요</span>
+              </div>
+            </div>
+            <div class="orbit-dot" aria-hidden="true"></div>
+          </div>
+
+          <div class="timer-actions">
+            <button type="button" class="primary-button" id="primary-button"><span class="play-icon" aria-hidden="true"></span><span id="primary-label">집중 시작</span></button>
+            <button type="button" class="icon-button" id="reset-button" aria-label="현재 세션 초기화" title="현재 세션 초기화">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11a8.5 8.5 0 1 1 2.1 6.4M3.5 17v-6h6" /></svg>
+            </button>
+            <button type="button" class="text-button" id="skip-button">건너뛰기 <span aria-hidden="true">↗</span></button>
+          </div>
+          <p class="action-hint" id="action-hint">시작을 누르면 집중 시간이 흐릅니다.</p>
+        </section>
+
+        <aside class="side-column" aria-label="진행 상황과 설정">
+          <section class="progress-card" aria-labelledby="progress-title">
+            <div class="section-heading"><span class="section-symbol" aria-hidden="true">✳</span><span>YOUR PROGRESS</span></div>
+            <h2 id="progress-title">쌓여가는 집중</h2>
+            <div class="count-row"><strong id="completed-count">0</strong><span>번의 집중을<br />완료했어요</span></div>
+            <div class="cycle-header"><span>다음 긴 휴식까지</span><strong id="cycle-text">4번 남음</strong></div>
+            <div class="cycle-dots" id="cycle-dots" aria-label="긴 휴식까지의 집중 진행 상황">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="next-session"><span class="next-icon" aria-hidden="true">↗</span><div><span>다음 순서</span><strong id="next-label">짧은 휴식 · 5분</strong></div></div>
+          </section>
+
+          <section class="settings-card" aria-labelledby="settings-title">
+            <div class="settings-title-row"><div><div class="section-heading"><span class="section-symbol" aria-hidden="true">◷</span><span>MAKE IT YOURS</span></div><h2 id="settings-title">나만의 페이스</h2></div><span class="settings-unit">단위: 분</span></div>
+            <form id="settings-form">
+              <label class="setting-row"><span><span class="setting-dot focus-dot"></span>집중</span><span class="input-wrap"><input id="focus-minutes" name="focus" type="number" min="1" max="180" step="1" inputmode="numeric" required aria-label="집중 시간(분)" /><span>분</span></span></label>
+              <label class="setting-row"><span><span class="setting-dot short-dot"></span>짧은 휴식</span><span class="input-wrap"><input id="short-minutes" name="short" type="number" min="1" max="180" step="1" inputmode="numeric" required aria-label="짧은 휴식 시간(분)" /><span>분</span></span></label>
+              <label class="setting-row"><span><span class="setting-dot long-dot"></span>긴 휴식</span><span class="input-wrap"><input id="long-minutes" name="long" type="number" min="1" max="180" step="1" inputmode="numeric" required aria-label="긴 휴식 시간(분)" /><span>분</span></span></label>
+              <button class="save-button" type="submit">시간 설정 저장 <span aria-hidden="true">→</span></button>
+              <p class="settings-hint">현재 세션의 시간을 바꾸면 처음부터 다시 시작해요.</p>
+            </form>
+          </section>
+          <p class="side-quote">“조금씩, 꾸준히. 그걸로 충분해요.”</p>
+        </aside>
+      </main>
+      <footer class="footer"><span>MOA POMODORO</span><span>오늘의 리듬을 만들어가요 <span aria-hidden="true">✦</span></span></footer>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div class="sr-only" id="announcement" role="alert" aria-live="assertive" aria-atomic="true"></div>
+  </body>
+</html>
