@@ -13,7 +13,7 @@ AI Native Career Camp에서 배운 내용과 실습 결과물을 일차별로 �
 | [Day 04](day04/) | 스킬 배우기 | |
 | [Day 05](day05/) | Git으로 같이 일하기 | 스쿼드 레포 PR 3개 |
 | [Day 06](day06/) | 공공 API로 나만의 서비스 만들기 | RANDOM SHELF |
-| [Day 07](day07/) | | |
+| [Day 07](day07/) | 하루 3번 오는 서비스 | 포켓몬 실루엣 퀴즈 |
 | [Day 08](day08/) | | |
 | [Day 09](day09/) | | |
 | [Day 10](day10/) | | |
