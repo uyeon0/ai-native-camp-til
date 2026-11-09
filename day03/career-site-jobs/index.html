@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>채용 공고 | 커리어 길잡이</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- =====================================================================
+       [사용법] 이 파일을 내 폴더(예: jobs/)에 복사해서 시작해요.
+       1) 아래 "공통 스타일", "공통 헤더/메뉴", "공통 푸터", "공통 스크립트"는 고치지 않아요.
+       2) 내 내용은 본문의 "여기부터 내 페이지 내용" 주석과 "여기까지" 주석 사이에만 써요.
+       3) 내 페이지만의 스타일은 "내 페이지 스타일" 블록에만 쓰고, 색은 var(--bg-dark)처럼 style.css 이름으로만 써요.
+       4) 폴더 한 단계 아래에 두는 파일이라 링크가 ../ 로 시작해요. 위치가 다르면 ../ 개수를 맞춰요.
+       ===================================================================== -->
+
+  <!-- ===== 공통 스타일: 고치지 마세요 ===== -->
+  <style>
+    body { word-break: keep-all; }
+
+    /* 메뉴: 위쪽 3분의 1, 항목은 가로 한 줄 (좁은 화면에서는 줄바꿈) */
+    .menu {
+      inset: 0 0 auto 0;
+      height: 33vh;
+      min-height: 260px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: center;
+      align-items: center;
+      gap: 8px 20px;
+      padding: 88px var(--pad-x) 24px;
+      visibility: hidden;
+      transition: clip-path 0.7s var(--ease), visibility 0s linear 0.7s;
+    }
+    .menu.open { visibility: visible; transition: clip-path 0.7s var(--ease), visibility 0s; }
+    .menu a {
+      font-family: var(--sans);
+      font-size: clamp(17px, 2vw, 26px);
+      white-space: nowrap;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+    }
+    .menu a[aria-current="page"] { opacity: 1; }
+    .menu a:focus-visible { opacity: 1; outline: 2px solid currentColor; outline-offset: 6px; }
+    .burger { padding: 17px 0; }
+    .talk:focus-visible, .burger:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
+    @media (min-width: 769px) {
+      .menu { flex-wrap: nowrap; justify-content: space-between; }
+    }
+
+    /* 페이지 틀 */
+    .inner { max-width: 1200px; margin: 0 auto; }
+    .page-head { padding: clamp(140px, 22vh, 220px) var(--pad-x) 56px; }
+    .eyebrow { font-family: var(--serif); font-size: 18px; letter-spacing: 0.08em; margin-bottom: 16px; opacity: 0.6; }
+    .page-title { font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text); }
+    .page-lead { margin-top: 20px; max-width: 560px; color: var(--text); }
+    .page-body { padding: 0 var(--pad-x) 14vh; }
+
+    /* 내용 블록: 제목 + 설명 + 내용 */
+    .block { padding: 56px 0; }
+    .block + .block { border-top: 1px solid var(--line); }
+    .block-title { font-size: clamp(24px, 3vw, 36px); font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; color: var(--text); margin-bottom: 12px; }
+    .block-lead { max-width: 560px; margin-bottom: 32px; color: var(--text); }
+
+    /* 카드 */
+    .panels { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .panel { border: 1px solid var(--line); border-radius: 20px; padding: 24px; }
+    .panel h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .panel p { font-size: 14px; color: var(--text); }
+
+    /* 태그 */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { display: inline-block; background: var(--line); border-radius: 999px; padding: 4px 14px; font-size: 13px; }
+
+    /* 버튼: .btn-main(주요)은 페이지당 하나 */
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 28px; border-radius: 999px; border: 1px solid currentColor; font-size: 15px; font-weight: 600; }
+    .btn-main { background: var(--bg-dark); border-color: var(--bg-dark); color: var(--text-inverse); }
+    .btn:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
+    /* 줄 목록 (홈의 직군·마감 공고와 같은 모양) */
+    .rows { position: relative; }
+    .rows::after { content: ""; display: block; height: 1px; background: currentColor; opacity: 0.15; }
+    .row {
+      position: relative;
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      grid-template-areas: "no name count" ". desc desc";
+      gap: 6px 12px;
+      align-items: baseline;
+      padding: 28px 0;
+      transition: transform 0.4s var(--ease);
+    }
+    .row::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: currentColor; opacity: 0.15; }
+    a.row:hover { transform: translateX(12px); }
+    .row:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    .row-no { grid-area: no; font-family: var(--serif); font-size: 20px; opacity: 0.5; }
+    .row-name { grid-area: name; font-size: clamp(20px, 2.6vw, 30px); font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; }
+    .row-desc { grid-area: desc; font-size: 14px; opacity: 0.7; }
+    .row-count { grid-area: count; font-family: var(--serif); font-size: 24px; font-weight: 600; white-space: nowrap; }
+    .note { font-size: 14px; opacity: 0.7; padding: 24px 0; }
+    @media (min-width: 769px) {
+      .row { grid-template-columns: 64px 1.1fr 1.4fr auto; grid-template-areas: "no name desc count"; align-items: center; }
+    }
+  </style>
+
+  <!-- ===== 내 페이지 스타일: 여기에만 쓰세요. 색은 var(--...) 이름으로만 ===== -->
+  <style>
+    /* ---------- 검색 · 필터 ---------- */
+    .filters { display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px; }
+
+    /* 검색창: 헤더의 '채용 공고 보기'처럼 밑줄 하나로 */
+    .search {
+      width: 100%; padding: 12px 0;
+      border: 0; border-bottom: 1px solid currentColor; border-radius: 0;
+      background: transparent; color: var(--text-strong);
+      font: inherit; font-size: clamp(17px, 2vw, 22px);
+    }
+    .search::placeholder { color: var(--text); opacity: 0.5; }
+    .search:focus { outline: none; }
+    .search:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
+    .filter-row { display: flex; flex-direction: column; gap: 10px; }
+    .filter-label { font-size: 13px; font-weight: 600; color: var(--text); opacity: 0.7; }
+
+    .filter-chip {
+      min-height: 40px; padding: 0 18px;
+      border: 1px solid var(--line); border-radius: 999px;
+      color: var(--text-strong); font-size: 14px; font-weight: 600;
+      transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease);
+    }
+    .filter-chip:hover { border-color: currentColor; }
+    .filter-chip:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+    /* 선택된 칩: 주요 버튼(.btn-main)과 같은 짙은 바탕 */
+    .filter-chip[aria-pressed="true"] { background: var(--bg-dark); border-color: var(--bg-dark); color: var(--text-inverse); }
+
+    .ai-toggle { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
+    .ai-toggle input { width: 20px; height: 20px; accent-color: var(--bg-dark); }
+    .ai-help { margin-top: 6px; font-size: 13px; color: var(--text); opacity: 0.7; }
+
+    @media (min-width: 769px) {
+      .filter-row { flex-direction: row; align-items: center; }
+      .filter-label { flex: 0 0 56px; }
+    }
+
+    /* ---------- 결과 개수 · 정렬 ---------- */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .count { font-weight: 700; color: var(--text); }
+    /* 정렬: 브라우저 기본 화살표는 위치를 못 바꿔서 끄고, 화살표를 직접 그려요 */
+    .sort-wrap { position: relative; display: inline-block; }
+    .sort-wrap::after {
+      content: ""; position: absolute; top: 50%; right: 18px; pointer-events: none;
+      width: 7px; height: 7px; margin-top: -5px;
+      border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+      transform: rotate(45deg);
+    }
+    .sort {
+      appearance: none; -webkit-appearance: none;
+      min-height: 40px; padding: 0 44px 0 18px;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: var(--bg); color: var(--text-strong);
+      font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: border-color 0.3s var(--ease);
+    }
+    .sort:hover { border-color: currentColor; }
+    .sort:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+    /* ---------- 공고 줄 ---------- */
+    .job-info { display: block; }
+    .job-tags { margin-top: 10px; gap: 6px; }
+    .job-tags .chip { font-size: 12px; padding: 2px 12px; }
+    .ai-badge { display: inline-block; border: 1px solid currentColor; border-radius: 999px; padding: 1px 11px; font-size: 12px; font-weight: 600; }
+    .job-row .row-count { font-size: 22px; }
+
+    /* ---------- 결과가 없을 때 ---------- */
+    .empty .note { padding-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <!-- ===== 공통 헤더/메뉴: 고치지 마세요 (내 메뉴에만 aria-current="page" 붙이기) ===== -->
+  <header class="header">
+    <a class="logo" href="index.html">커리어 길잡이</a>
+    <div class="header-right">
+      <a class="talk" href="index.html">채용 공고 보기</a>
+      <button class="burger" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="site-menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="menu" id="site-menu" aria-label="주요 메뉴">
+    <a href="index.html" aria-current="page">채용 공고</a>
+  </nav>
+
+  <main>
+    <!-- 페이지 제목 영역: 글만 바꾸세요 -->
+    <section class="page-head">
+      <div class="inner">
+        <p class="eyebrow reveal" lang="en">Jobs</p>
+        <h1 class="page-title reveal">채용 공고</h1>
+        <p class="page-lead reveal">직군과 경력, AI 우대 여부로 나에게 맞는 공고를 골라 보세요.</p>
+      </div>
+    </section>
+
+    <div class="page-body">
+      <div class="inner">
+        <!-- 여기부터 내 페이지 내용 ============================================ -->
+
+        <section class="block">
+          <div class="filters reveal" role="search" aria-label="공고 검색과 필터">
+            <input class="search" id="search" type="search" placeholder="회사 이름, 공고 제목, 태그로 검색" aria-label="공고 검색">
+
+            <div class="filter-row" role="group" aria-labelledby="role-label">
+              <span class="filter-label" id="role-label">직군</span>
+              <div class="chips" data-filter="role">
+                <button class="filter-chip" type="button" data-value="" aria-pressed="true">전체</button>
+                <button class="filter-chip" type="button" data-value="개발" aria-pressed="false">개발</button>
+                <button class="filter-chip" type="button" data-value="디자인" aria-pressed="false">디자인</button>
+                <button class="filter-chip" type="button" data-value="PO" aria-pressed="false">PO</button>
+                <button class="filter-chip" type="button" data-value="마케팅" aria-pressed="false">마케팅</button>
+              </div>
+            </div>
+
+            <div class="filter-row" role="group" aria-labelledby="level-label">
+              <span class="filter-label" id="level-label">경력</span>
+              <div class="chips" data-filter="level">
+                <button class="filter-chip" type="button" data-value="" aria-pressed="true">전체</button>
+                <button class="filter-chip" type="button" data-value="신입" aria-pressed="false">신입</button>
+                <button class="filter-chip" type="button" data-value="경력 1~3년" aria-pressed="false">경력 1~3년</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="ai-toggle"><input id="ai-only" type="checkbox"> AI 우대 공고만 보기</label>
+              <p class="ai-help">AI 우대: AI 도구를 써 본 경험이 있으면 더 좋게 본다는 뜻이에요.</p>
+            </div>
+          </div>
+
+          <div class="toolbar reveal">
+            <p class="count" id="count" aria-live="polite"></p>
+            <span class="sort-wrap">
+              <select class="sort" id="sort" aria-label="정렬">
+                <option value="default">기본 순</option>
+                <option value="deadline">마감일 빠른 순</option>
+              </select>
+            </span>
+          </div>
+
+          <div class="rows reveal" id="job-list"></div>
+
+          <div class="empty" id="empty" hidden>
+            <p class="note">조건에 맞는 공고가 없어요. 필터를 줄여 보세요.</p>
+            <button class="btn" id="reset" type="button">필터 초기화</button>
+          </div>
+        </section>
+
+        <!-- 여기까지 ========================================================== -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== 공통 푸터: 고치지 마세요 ===== -->
+  <footer class="footer">
+    <span>© 2026 커리어 길잡이</span>
+    <span>수업용 실습 사이트 · 모든 회사와 공고는 가상입니다 · ○조</span>
+  </footer>
+
+  <div class="cursor" aria-hidden="true"></div>
+
+  <!-- ===== 공통 스크립트: 고치지 마세요 (메뉴 열고 닫기 · 스크롤 등장 · 커서) ===== -->
+  <script>
+    (function () {
+      var burger = document.querySelector('.burger');
+      var menu = document.querySelector('.menu');
+      var cursor = document.querySelector('.cursor');
+
+      // 1) 메뉴 열고 닫기
+      function setMenu(open) {
+        burger.classList.toggle('open', open);
+        menu.classList.toggle('open', open);
+        burger.setAttribute('aria-expanded', String(open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
+      burger.addEventListener('click', function () { setMenu(!menu.classList.contains('open')); });
+      menu.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+      window.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+
+      // 2) 스크롤하면 내용이 나타나기 (긴 내용도 보이도록 문턱을 0으로)
+      var reveals = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+          });
+        }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+        reveals.forEach(function (el) { io.observe(el); });
+      } else {
+        reveals.forEach(function (el) { el.classList.add('in'); });
+      }
+
+      // 3) 부드럽게 따라오는 커서
+      var mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
+      window.addEventListener('pointermove', function (e) { mx = e.clientX; my = e.clientY; });
+      document.addEventListener('pointerover', function (e) {
+        cursor.classList.toggle('big', !!e.target.closest('a, button'));
+      });
+      (function tick() {
+        cx += (mx - cx) * 0.18;
+        cy += (my - cy) * 0.18;
+        cursor.style.transform = 'translate(' + cx + 'px, ' + cy + 'px)';
+        requestAnimationFrame(tick);
+      })();
+    })();
+  </script>
+
+  <!-- ===== 내 페이지 스크립트: 필요하면 여기에만 쓰세요 (fetch()는 쓰지 않아요. 공고는 jobs.js 를 <script src>로) ===== -->
+  <script src="jobs.js"></script>
+  <script>
+    // 공고 줄은 스크립트로 그려요. 공통 스크립트가 .reveal을 처음에만 찾기 때문에
+    // 줄 하나하나가 아니라 감싸는 #job-list에만 .reveal을 붙였어요.
+    const state = { query: "", role: "", level: "", aiOnly: false, sort: "default" };
+    const listEl = document.getElementById("job-list");
+    const countEl = document.getElementById("count");
+    const emptyEl = document.getElementById("empty");
+
+    // 오늘 0시 기준으로 마감일까지 남은 날짜
+    function daysLeft(deadline) {
+      const [y, m, d] = deadline.split("-").map(Number);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return Math.round((new Date(y, m - 1, d) - today) / 86400000);
+    }
+
+    function dday(deadline) {
+      const left = daysLeft(deadline);
+      if (left < 0) return "마감";
+      return left === 0 ? "D-day" : `D-${left}`;
+    }
+
+    function shortDate(deadline) {
+      const [, m, d] = deadline.split("-").map(Number);
+      return `${m}/${d} 마감`;
+    }
+
+    function matches(job) {
+      if (state.role && job.role !== state.role) return false;
+      if (state.level && job.level !== state.level) return false;
+      if (state.aiOnly && !job.aiPreferred) return false;
+      if (state.query) {
+        const q = state.query.toLowerCase();
+        const text = [job.company, job.title, ...job.tags].join(" ").toLowerCase();
+        if (!text.includes(q)) return false;
+      }
+      return true;
+    }
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    // 공고 한 줄: 번호 · 제목 · (회사 · 직군 · 경력 · 지역 · 마감일 + 태그) · D-day
+    function createRow(job, index) {
+      const row = el("div", "row job-row");
+
+      const desc = el("span", "row-desc");
+      desc.append(el("span", "job-info",
+        [job.company, job.role, job.level, job.location, shortDate(job.deadline)].join(" · ")));
+      const tags = el("span", "chips job-tags");
+      if (job.aiPreferred) tags.append(el("span", "ai-badge", "AI 우대"));
+      job.tags.forEach(tag => tags.append(el("span", "chip", tag)));
+      desc.append(tags);
+
+      row.append(
+        el("span", "row-no", String(index + 1).padStart(2, "0")),
+        el("span", "row-name", job.title),
+        desc,
+        el("span", "row-count", dday(job.deadline))
+      );
+      return row;
+    }
+
+    function render() {
+      let jobs = window.JOBS.filter(matches);
+      if (state.sort === "deadline") {
+        jobs = [...jobs].sort((a, b) => a.deadline.localeCompare(b.deadline));
+      }
+
+      listEl.replaceChildren(...jobs.map(createRow));
+      listEl.hidden = jobs.length === 0;
+      countEl.textContent = `${jobs.length}개의 공고`;
+      emptyEl.hidden = jobs.length > 0;
+    }
+
+    // 직군·경력 칩: 그룹마다 하나만 고를 수 있어요
+    document.querySelectorAll("[data-filter]").forEach(group => {
+      group.addEventListener("click", e => {
+        const chip = e.target.closest(".filter-chip");
+        if (!chip) return;
+        group.querySelectorAll(".filter-chip").forEach(c => c.setAttribute("aria-pressed", String(c === chip)));
+        state[group.dataset.filter] = chip.dataset.value;
+        render();
+      });
+    });
+
+    document.getElementById("search").addEventListener("input", e => {
+      state.query = e.target.value.trim();
+      render();
+    });
+
+    document.getElementById("ai-only").addEventListener("change", e => {
+      state.aiOnly = e.target.checked;
+      render();
+    });
+
+    document.getElementById("sort").addEventListener("change", e => {
+      state.sort = e.target.value;
+      render();
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      Object.assign(state, { query: "", role: "", level: "", aiOnly: false });
+      document.getElementById("search").value = "";
+      document.getElementById("ai-only").checked = false;
+      document.querySelectorAll("[data-filter] .filter-chip").forEach(c => {
+        c.setAttribute("aria-pressed", String(c.dataset.value === ""));
+      });
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
