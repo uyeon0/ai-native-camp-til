@@ -1,0 +1,8 @@
+# Claude Design 시안 v2 (C 따뜻한 종이톤) 색을 그대로 옮김
+[theme]
+base = "light"
+primaryColor = "#af5331"          # 테라코타 강조 (1개만)
+backgroundColor = "#f8f3eb"       # 미색 종이
+secondaryBackgroundColor = "#efe7dc"
+textColor = "#271d17"             # 먹색
+font = "serif"
