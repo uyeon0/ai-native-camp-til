@@ -12,21 +12,21 @@ AI Native Career Camp에서 배운 내용과 실습 결과물을 일차별로 �
 | [Day 03](day03/) | 조별 사이트를 페이지별로 나눠 만들기 | 채용 공고 페이지, 코드 한 줄 타자 연습 |
 | [Day 04](day04/) | 스킬 배우기 | |
 | [Day 05](day05/) | Git으로 같이 일하기 | 스쿼드 레포 PR 3개 |
-| [Day 06](day06/) | 공공 API로 나만의 서비스 만들기 | RANDOM SHELF |
-| [Day 07](day07/) | 하루 3번 오는 서비스 | 포켓몬 실루엣 퀴즈 |
+| [Day 06](day06/) | 공공 API로 나만의 서비스 만들기 | [RANDOM SHELF](https://random-shelf.netlify.app/) |
+| [Day 07](day07/) | 하루 3번 오는 서비스 | [포켓몬 실루엣 퀴즈](https://devcguild.github.io/apptech/#/apps/pokemon) |
 | [Day 08](day08/) | 파이썬으로 카카오 지도와 공공데이터 다루기 | 카카오 지도 실습, 개념 정리 |
 | [Day 09](day09/) | 프롬프트 기본기 | 프롬프트 정리 노트 |
 | [Day 10](day10/) | 프롬프트 패턴과 프레임워크 | |
 
 ### 1차 프로젝트
-- [탈탈](project1/): 산 재료를 여러 요리에 나눠 쓰는 요리 묶음 추천 서비스
+- [탈탈](project1/) ([배포](https://taltal.vercel.app)): 산 재료를 여러 요리에 나눠 쓰는 요리 묶음 추천 서비스
 
 ### 17일차~
 | 일차 | 주제 | 만든 것 |
 |---|---|---|
 | [Day 17](day17/) | 서비스 하나 출시하기 | PR 의도 점검 에이전트, 수업 회고 모음판 |
-| [Day 18](day18/) | 크롤링과 수집 결정 | 할인 레이더 Steam 데이터, 크롤링 퀴즈 메모 |
-| [Day 19](day19/) | 데이터 정제와 시각화 | 타이타닉 분석, 다시, 정상 |
-| [Day 20](day20/) | Flask로 데이터를 웹 서비스로 | 한국영화 아카이브 |
-| [Day 21](day21/) | Flask 폼·DB·배포 개념과 팀 조명 브랜드 사이트 | 조명 브랜드 사이트 제품 페이지 |
-| [Day 22](day22/) | RAG로 문서 근거 챗봇 만들기 | import reference |
+| [Day 18](day18/) | 크롤링과 수집 결정 | [할인 레이더](https://jjongw-baby-agent-discount-radarapp-iaxr02.streamlit.app/) Steam 데이터, 크롤링 퀴즈 메모 |
+| [Day 19](day19/) | 데이터 정제와 시각화 | 타이타닉 분석, [다시, 정상](https://lions-v9.streamlit.app) |
+| [Day 20](day20/) | Flask로 데이터를 웹 서비스로 | [한국영화 아카이브](https://korean-film-archive.vercel.app) |
+| [Day 21](day21/) | Flask 폼·DB·배포 개념과 팀 조명 브랜드 사이트 | [조명 브랜드 사이트 제품 페이지](https://baby-agent.onrender.com/pages/product/) |
+| [Day 22](day22/) | RAG로 문서 근거 챗봇 만들기 | [import reference](https://import-reference.onrender.com) |
