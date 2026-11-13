@@ -28,3 +28,4 @@ AI Native Career Camp에서 배운 내용과 실습 결과물을 일차별로 �
 | [Day 18](day18/) | 크롤링과 수집 결정 | 할인 레이더 Steam 데이터, 크롤링 퀴즈 메모 |
 | [Day 19](day19/) | 데이터 정제와 시각화 | 타이타닉 분석, 다시, 정상 |
 | [Day 20](day20/) | Flask로 데이터를 웹 서비스로 | 한국영화 아카이브 |
+| [Day 22](day22/) | RAG로 문서 근거 챗봇 만들기 | import reference |
