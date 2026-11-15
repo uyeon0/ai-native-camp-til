@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>점프 투 파이썬 문제집</title>
+<meta name="author" content="uyeon0">
+<link rel="author" href="https://yoouyeon.dev">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#ffffff;--ink:#171717;--ink2:#474747;--muted:#8c8c8c;--faint:#c4c4c4;--line:#e8e8e8;--codebg:#f6f6f6;
+  --hl:#dcf98a;--hld:#8fcf1a;--no:#e5484d;--nobg:#fff5f5;   /* --no: 틀림에만 쓴다 */
+  --r:8px;--ide:420px;
+  --mono:"JetBrains Mono","Wanted Sans Variable","Wanted Sans",monospace;
+  --sans:"Wanted Sans Variable","Wanted Sans",-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 var(--sans)}
+button{font:inherit;cursor:pointer;color:inherit}
+[hidden]{display:none!important}
+.app{display:flex;min-height:100vh}
+.stage{flex:1;min-width:0;position:relative}
+
+/* 위쪽 한 줄 */
+.line{position:sticky;top:0;z-index:5;height:56px;display:flex;align-items:center;gap:10px;padding:0 32px;font-size:13px;color:var(--muted);background:var(--bg)}
+.line .here{color:var(--ink);font-weight:500}
+.line .sp{margin-left:auto}
+.line .go{color:#fff;font:600 13px var(--sans);background:var(--ink);border:1px solid var(--ink);border-radius:8px;padding:6px 12px}
+.line .go:hover{background:#333}
+.line .go.sub{color:var(--ink);background:var(--bg);border-color:var(--line)}
+.line .go.sub:hover{border-color:var(--ink);background:var(--bg)}
+
+/* 노트 */
+.toc{position:fixed;left:40px;top:104px;font-size:13px;line-height:2.4}
+.toc a{display:block;color:var(--faint);text-decoration:none;position:relative}
+.toc a.on{color:var(--ink);font-weight:600}
+.toc a.on::before{content:'';position:absolute;left:-14px;top:50%;width:6px;height:6px;border-radius:50%;background:var(--hld);transform:translateY(-50%)}
+@media (max-width:1180px){.toc{display:none}}
+.ide-open .toc{display:none}
+.col{max-width:708px;margin:0 auto;padding:24px 24px 160px}
+.kicker{font-size:12px;color:var(--muted)}
+h1{font:700 32px/1.3 var(--sans);margin:6px 0 4px;letter-spacing:-.02em}
+.unit h2{font:700 26px/1.35 var(--sans);margin:64px 0 12px;letter-spacing:-.02em;scroll-margin-top:72px}
+.unit h3{font-size:19px;font-weight:700;margin:28px 0 8px;line-height:1.4;letter-spacing:-.01em}
+.unit p,.unit li{color:var(--ink2)}
+.unit p{margin:0 0 10px}
+mark{background:linear-gradient(transparent 50%,var(--hl) 50%,var(--hl) 94%,transparent 94%);color:var(--ink);padding:0 1px}
+code{font:.875em var(--mono);background:var(--codebg);border-radius:4px;padding:1px 5px}
+pre.code{background:var(--codebg);border-radius:var(--r);font:14px/1.7 var(--mono);padding:14px 18px;position:relative;margin:10px 0 14px;white-space:pre;overflow-x:auto;color:#1f1f1f}
+pre.code code{background:none;padding:0;font:inherit}
+.send{position:absolute;right:10px;top:10px;font:500 12px var(--sans);color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+.send:hover{color:var(--ink)}
+.viz{margin:8px 0 14px}
+.unit table{border-collapse:collapse;margin:8px 0 14px;font-size:15px}
+.unit th,.unit td{border-bottom:1px solid var(--line);padding:6px 14px 6px 0;text-align:left;vertical-align:top}
+.unit th{font-weight:600;color:var(--muted);font-size:12px}
+.unit a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--hld);text-decoration-thickness:2px;text-underline-offset:3px}
+.unit blockquote{margin:10px 0;padding:2px 0 2px 14px;border-left:3px solid var(--line);color:var(--ink2)}
+.unit ol,.unit ul{padding-left:22px;margin:6px 0 12px}
+.unit li{margin:2px 0}
+.unit p.lead{margin:18px 0 4px;color:var(--ink)}
+.viz svg{display:block;max-width:100%;height:auto}
+.end{border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;font-size:14px;margin-top:24px;width:100%;background:var(--bg);text-align:left}
+.end b{margin-left:auto}
+.end:hover{border-color:var(--ink)}
+.hlt{background:linear-gradient(transparent 55%,var(--hl) 55%,var(--hl) 92%,transparent 92%)}
+
+/* 질문형 펼침: 노트(.deep)와 해설(.why) */
+details.deep{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);margin:16px 0}
+.exp details.deep{margin:12px 0 4px;background:none;border:none;border-top:1px solid var(--line);border-radius:0}
+.exp details.deep>summary{padding:10px 0 4px;font-size:15px}
+.exp details.deep>.b{padding:4px 0 2px}
+.exp details.deep>.b::before{display:none}
+details.deep[open]{border-color:#cfcfcf}
+details.deep>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:15px;font-weight:600;color:var(--ink)}
+details.deep>summary::-webkit-details-marker{display:none}
+details.deep>summary::before{content:'?';flex:none;font:700 15px var(--mono);color:var(--hld)}
+details.deep>summary::after{content:'펼쳐 보기';margin-left:auto;flex:none;font:500 12px var(--sans);color:var(--muted)}
+details.deep[open]>summary::after{content:'접기'}
+details.deep>.b{padding:0 18px 14px;font-size:15px}
+details.deep>.b::before{content:'';display:block;border-top:1px solid var(--line);margin-bottom:12px}
+details.deep pre.code{background:var(--codebg)}
+
+/* 문제 */
+.track{display:flex;gap:3px;align-items:center;margin-left:8px}
+.track i{width:10px;height:4px;border-radius:2px;background:#ececec;display:block;cursor:pointer}
+.track i.ok{background:#bdbdbd}.track i.no{background:var(--no)}.track i.cur{background:var(--ink);width:18px}
+.track .g{width:8px}
+.quiz{max-width:628px;margin:0 auto;padding:28px 24px 140px}
+.quiz h2{font:700 24px/1.4 var(--sans);margin:16px 0 14px;letter-spacing:-.02em}
+.opts{display:flex;flex-direction:column;gap:8px}
+.o{border:1px solid var(--line);border-radius:var(--r);padding:11px 16px;display:flex;gap:14px;font:15px var(--mono);background:var(--bg);text-align:left;width:100%}
+.o:hover{border-color:#bdbdbd}
+.o .k{color:var(--faint);font-family:var(--sans)}
+.o .v.txt{font-family:var(--sans);font-size:15px}
+.o .t{margin-left:auto;font:600 12px var(--sans);color:var(--muted)}
+.o.mine{border-color:var(--no);background:var(--nobg)}
+.o.mine .t{color:var(--no)}
+.o.mine .k{color:var(--no)}
+.o.ans{border:1px solid var(--ink);padding:11px 16px}
+.o.ans .v{background:linear-gradient(transparent 40%,var(--hl) 40%,var(--hl) 96%,transparent 96%);padding:0 3px;font-weight:600}
+.o.ans .t{color:var(--ink)}
+.o[disabled]{cursor:default}
+.exp{margin-top:18px;padding:14px 18px;border-radius:var(--r);background:#fafafa;font-size:15px;color:var(--ink2)}
+.exp b{color:var(--ink)}
+.exp .rel{display:block;margin-top:12px;color:var(--ink);font-weight:600;font-size:13px;text-decoration:underline;text-decoration-color:var(--hld);text-decoration-thickness:2px;text-underline-offset:3px;background:none;border:none;padding:0}
+.qnav{position:fixed;bottom:28px;display:grid;grid-template-columns:140px 132px 140px;gap:8px;align-items:center;transform:translateX(-50%);z-index:6}
+.qnav>:nth-child(1){justify-self:end}.qnav>:nth-child(2){justify-self:center;width:132px;padding-left:0;padding-right:0}.qnav .count{font:500 13px var(--sans);color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.qnav>:nth-child(3){justify-self:start;white-space:nowrap}
+.btn{border:1px solid var(--line);border-radius:8px;padding:8px 16px;font:600 13px var(--sans);background:var(--bg)}
+.btn.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:default}
+
+/* Python 알약 + IDE */
+.pill{position:fixed;right:28px;bottom:28px;z-index:9;border-radius:99px;padding:9px 18px;font:600 13px var(--sans);background:var(--bg);color:var(--ink);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.pill:hover{border-color:var(--ink)}
+.ide-open .pill{right:calc(var(--ide) + 28px)}
+.ide{width:0;overflow:hidden;position:sticky;top:0;height:100vh;background:#f7f7f7;border-left:1px solid var(--line);display:flex;flex-direction:column;transition:width .18s}
+.ide-open .ide{width:var(--ide)}
+.ide .hd{height:56px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;font:600 13px var(--sans);border-bottom:1px solid var(--line);min-width:var(--ide)}
+.ide .hd .sp{margin-left:auto}
+.ide .st{font:500 11px var(--sans);color:var(--muted)}
+.ide textarea{flex:1;border:none;background:transparent;font:13px/1.8 var(--mono);padding:14px 16px;resize:none;outline:none;min-width:var(--ide);color:#1f1f1f;tab-size:4}
+.ide .out{height:200px;flex:none;border-top:1px solid var(--line);padding:12px 16px;font:13px/1.6 var(--mono);background:var(--bg);overflow:auto;white-space:pre-wrap;min-width:var(--ide)}
+.ide .out small{display:block;font:600 11px var(--sans);color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+.ide .err{color:#b42318}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="stage" id="stage">
+    <div id="notes">
+      <div class="line"><span id="chap"></span><span>›</span><span class="here" id="curUnit"></span><button class="sp go" id="toQuiz">문제 풀기 →</button></div>
+      <nav class="toc" id="toc"></nav>
+      <div class="col">
+        <div class="kicker" id="kicker"></div>
+        <h1 id="title"></h1>
+        <div id="units"></div>
+      </div>
+    </div>
+    <div id="quiz" hidden>
+      <div class="line"><span id="chap2"></span><span>›</span><span class="here" id="qWhere"></span><span class="track" id="track"></span><button class="sp go sub" id="toNotes">← 노트 보기</button></div>
+      <div class="quiz" id="qBody"></div>
+      <div class="qnav" id="qnav"></div>
+    </div>
+  </div>
+  <aside class="ide" id="ide" aria-label="Python 실행기">
+    <div class="hd">Python <span class="st" id="ideSt"></span><button class="sp btn" id="clear">비우기</button><button class="btn p" id="runBtn">▶ 실행</button></div>
+    <textarea id="ed" spellcheck="false" placeholder=""></textarea>
+    <div class="out"><small>출력</small><span id="out"></span></div>
+  </aside>
+</div>
+<button class="pill" id="pill">▶ Python</button>
+
+<script>
+/*CONTENT*/
+</script>
+<script>
+(() => {
+const W = window.WORKBOOK, U = W.units, Q = W.questions;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const unitIdx = id => U.findIndex(u => u.id === id);
+
+/* ---------- 노트 ---------- */
+document.title = W.title;
+$('title').textContent = W.title;
+$('kicker').textContent = W.kicker || '';
+$('chap').textContent = $('chap2').textContent = W.chapter || '';
+$('toc').innerHTML = U.map((u, i) => `<a href="#u-${u.id}" data-i="${i}">${esc(u.title)}</a>`).join('');
+$('units').innerHTML = U.map((u, i) => {
+  const n = Q.filter(q => q.unit === u.id).length;
+  return `<section class="unit" data-i="${i}"><h2 id="u-${u.id}">${esc(u.title)}</h2>${u.html}
+    ${n ? `<button class="end" data-start="${u.id}">${esc(u.title)} 끝<b><span class="hlt">이 단원 문제 ${n}개 풀기</span> →</b></button>` : ''}</section>`;
+}).join('');
+document.querySelectorAll('details.deep').forEach(d => {
+  const b = document.createElement('div'); b.className = 'b';
+  [...d.childNodes].filter(n => n.nodeName !== 'SUMMARY').forEach(n => b.appendChild(n));
+  d.appendChild(b);
+});
+document.querySelectorAll('pre.code').forEach(addSend);
+function addSend(pre) {
+  // 대화형 모드(>>>) 예시나 실행할 수 없는 출력 예시(class="norun")에는 버튼을 달지 않는다
+  if (pre.classList.contains('norun') || pre.textContent.trimStart().startsWith('>>>')) return;
+  const b = document.createElement('button'); b.className = 'send'; b.textContent = 'IDE에서 열기 ↗';
+  b.onclick = () => openInIde(pre.querySelector('code') ? pre.querySelector('code').textContent : pre.firstChild.textContent);
+  pre.appendChild(b);
+}
+document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => startQuiz(Q.findIndex(q => q.unit === b.dataset.start), b.dataset.start));
+$('toQuiz').onclick = () => startQuiz(0);
+function spy() {
+  if ($('notes').hidden) return;
+  let i = 0; document.querySelectorAll('.unit').forEach((s, k) => { if (s.getBoundingClientRect().top < 200) i = k; });
+  document.querySelectorAll('.toc a').forEach(a => a.classList.toggle('on', +a.dataset.i === i));
+  $('curUnit').textContent = U[i] ? U[i].title : '';
+}
+addEventListener('scroll', spy, {passive: true}); spy();
+
+/* ---------- 문제 ---------- */
+// scope: 노트 단원 끝에서 들어왔으면 그 단원 id, 위쪽 '문제 풀기'로 들어왔으면 null(전체)
+const st = Q.map(() => ({sel: null, done: false}));
+let cur = 0, scope = null;
+// 브라우저 기록: 노트 ↔ 문제 전환만 쌓는다. 문제 사이 이동은 쌓지 않는다.
+// 떠나기 전에 지금 화면 상태(노트 스크롤 위치, 풀던 문제)를 현재 기록에 저장해 두고, 뒤로가기 때 되살린다.
+const NOTES_URL = location.pathname + location.search;
+let notesY = 0;   // 마지막으로 노트를 읽던 위치
+function saveHere() {
+  if (!$('notes').hidden) notesY = scrollY;
+  history.replaceState($('quiz').hidden ? {view: 'notes', y: scrollY} : {view: 'quiz', cur, scope}, '');
+}
+function startQuiz(i, unit = null, fromHistory = false) {
+  if (!fromHistory) { saveHere(); history.pushState({view: 'quiz', cur: Math.max(0, i), scope: unit}, '', '#quiz'); }
+  $('notes').hidden = true; $('quiz').hidden = false; scope = unit; cur = Math.max(0, i); scrollTo({top: 0, behavior: 'instant'}); render();
+}
+function showNotes(unitId, fromHistory = false, y = null) {
+  if (!fromHistory) { saveHere(); history.pushState({view: 'notes', y: notesY}, '', NOTES_URL); }
+  if (y === null && !unitId) y = notesY;
+  $('quiz').hidden = true; $('notes').hidden = false;
+  if (unitId) document.getElementById('u-' + unitId).scrollIntoView({behavior: 'instant'});
+  else if (y !== null) scrollTo({top: y, behavior: 'instant'});
+  spy();
+}
+addEventListener('popstate', e => {
+  const s = e.state || {view: location.hash === '#quiz' ? 'quiz' : 'notes', cur: 0, scope: null, y: 0};
+  if (s.view === 'quiz') startQuiz(s.cur || 0, s.scope || null, true);
+  else showNotes(null, true, s.y || 0);
+});
+$('toNotes').onclick = () => showNotes();
+const ok = i => st[i].done && st[i].sel === Q[i].answer;
+
+function render() {
+  const t = [];
+  Q.forEach((q, i) => {
+    if (i && Q[i - 1].unit !== q.unit) t.push('<span class="g"></span>');
+    const c = i === cur ? 'cur' : st[i].done ? (ok(i) ? 'ok' : 'no') : '';
+    t.push(`<i class="${c}" data-go="${i}" title="문제 ${i + 1}"></i>`);
+  });
+  $('track').innerHTML = t.join('');
+  $('track').querySelectorAll('[data-go]').forEach(e => e.onclick = () => go(+e.dataset.go));
+  renderQ();
+  placeNav();
+  history.replaceState({view: 'quiz', cur, scope}, '');   // 앞으로가기 때 풀던 문제로 돌아오도록
+}
+function renderQ() {
+  const q = Q[cur], s = st[cur], u = U[unitIdx(q.unit)], inU = Q.filter(x => x.unit === q.unit);
+  $('qWhere').textContent = `${u.title} ${inU.indexOf(q) + 1}/${inU.length}`;
+  const opts = q.options.map((o, i) => {
+    let cls = '', tag = '';
+    if (s.done) { if (i === q.answer) { cls = 'ans'; tag = '정답'; } else if (i === s.sel) { cls = 'mine'; tag = '✕ 내 답'; } }
+    else if (s.sel === i) cls = 'sel';
+    return `<button class="o ${cls}" data-pick="${i}" ${s.done ? 'disabled' : ''}><span class="k">${i + 1}</span><span class="v${/[가-힣]/.test(o) ? ' txt' : ''}">${esc(o)}</span><span class="t">${tag}</span></button>`;
+  }).join('');
+  $('qBody').innerHTML = `<h2>${q.question}</h2>
+    ${q.code ? `<pre class="code"><code>${esc(q.code)}</code></pre>` : ''}
+    <div class="opts">${opts}</div>
+    ${s.done ? `<div class="exp"><b>정답은 ${q.answer + 1}번 <code>${esc(q.options[q.answer])}</code></b><br>${q.explain}
+      ${q.viz ? `<div class="viz">${q.viz}</div>` : ''}
+      ${q.more ? `<details class="deep"><summary>${q.more.q}</summary><div class="b">${q.more.a}</div></details>` : ''}
+      <button class="rel" data-rel="${q.unit}">관련 노트: ${esc(u.title)} ↑</button></div>` : ''}`;
+  $('qBody').querySelectorAll('pre.code').forEach(addSend);
+  $('qBody').querySelectorAll('[data-pick]').forEach(b => b.onclick = () => pick(+b.dataset.pick));
+  const rel = $('qBody').querySelector('[data-rel]'); if (rel) rel.onclick = () => showNotes(rel.dataset.rel);
+
+  // 마지막 문제(전체) 또는 노트에서 들어온 단원의 마지막 문제에서는 다음 버튼이 바뀐다
+  const lastAll = cur === Q.length - 1;
+  const lastScope = scope !== null && q.unit === scope && (lastAll || Q[cur + 1].unit !== scope);
+  const nu = !lastAll ? U[unitIdx(Q[cur + 1].unit)] : null;
+  // 자리 3칸 고정: [←] [가운데 주 버튼] [→]. 버튼이 바뀌어도 ←, 가운데, → 위치는 그대로다.
+  // 가운데는 평소엔 문제 번호(글자), 갈 곳이 달라지는 단원 끝·마지막 문제에서만 버튼이 된다.
+  let mid = `<span class="count">${cur + 1} / ${Q.length}</span>`;
+  let right = `<button class="btn p" id="nx" ${lastAll ? 'disabled' : ''}>→</button>`;   // 문제 화면의 주요 이동은 →
+  if (s.done && lastScope && nu) {   // 노트에서 들어온 단원의 끝: 두 선택지를 같은 모양으로
+    mid = `<button class="btn" id="nn">${esc(nu.id)} 노트 보기 ↓</button>`;
+    right = `<button class="btn" id="nx">계속 풀기 →</button>`;
+  } else if (s.done && (lastAll || lastScope)) mid = `<button class="btn p" id="nn">노트 보기</button>`;
+  $('qnav').innerHTML = `<button class="btn" id="prev" ${cur === 0 ? 'disabled' : ''}>←</button>` + mid + right;
+  $('prev').onclick = () => go(cur - 1);
+  const fwd = () => { if (lastScope) scope = null; go(cur + 1); };   // '계속 풀기'면 전체 풀기로
+  if ($('nx')) $('nx').onclick = fwd;
+  if ($('nn')) $('nn').onclick = () => showNotes(nu && lastScope ? nu.id : null);
+}
+function placeNav() { const r = $('stage').getBoundingClientRect(); $('qnav').style.left = (r.left + r.width / 2) + 'px'; }
+addEventListener('resize', placeNav);
+function pick(i) { if (st[cur].done) return; st[cur].sel = i; st[cur].done = true; render(); }
+function go(i) {
+  if (i < 0 || i >= Q.length) return;
+  if (scope !== null && Q[i].unit !== scope) scope = null;   // 다른 단원으로 옮기면 전체 풀기로
+  cur = i; scrollTo({top: 0, behavior: 'instant'}); render();
+}
+
+/* ---------- Python (Pyodide, 처음 실행할 때 불러옴) ---------- */
+const ed = $('ed'), out = $('out');
+// 맥은 ⌘, 그 밖(윈도우·리눅스)은 Ctrl 로 안내한다.
+const MOD = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘' : 'Ctrl+';
+ed.placeholder = `# 여기에 파이썬 코드를 쓰고 ▶ 실행 (${MOD}Enter)`;
+let py = null, loading = null;
+function toggleIde(v) {
+  const open = v === undefined ? !$('app').classList.contains('ide-open') : v;
+  $('app').classList.toggle('ide-open', open);
+  $('pill').textContent = open ? '▶ Python 닫기' : '▶ Python';
+  if (open) ed.focus();
+  setTimeout(placeNav, 200);
+}
+function openInIde(code) { ed.value = code.replace(/\n$/, ''); out.textContent = ''; toggleIde(true); }
+$('pill').onclick = () => toggleIde();
+$('clear').onclick = () => { ed.value = ''; out.textContent = ''; ed.focus(); };
+function loadPy() {
+  if (loading) return loading;
+  $('ideSt').textContent = '불러오는 중…';
+  loading = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    s.onload = async () => { try { py = await loadPyodide(); $('ideSt').textContent = ''; res(py); } catch (e) { rej(e); } };
+    s.onerror = () => { $('ideSt').textContent = '불러오기 실패 (인터넷 연결 확인)'; loading = null; rej(); };
+    document.head.appendChild(s);
+  });
+  return loading;
+}
+async function run() {
+  out.textContent = '';
+  try { await loadPy(); } catch { return; }
+  const buf = [];
+  py.setStdout({batched: s => buf.push(s)});
+  py.setStderr({batched: s => buf.push(s)});
+  try {
+    py.globals.set('__name__', '__main__');
+    await py.runPythonAsync(ed.value);   // .py 파일처럼 print 한 것만 보여 준다
+    out.textContent = buf.join('\n');
+  } catch (e) {
+    const msg = String(e.message || e).trim().split('\n');
+    const i = msg.findIndex(l => l.includes('File "<exec>"'));
+    out.innerHTML = esc(buf.join('\n')) + (buf.length ? '\n' : '') + `<span class="err">${esc((i >= 0 ? msg.slice(i) : msg).join('\n'))}</span>`;
+  }
+}
+$('runBtn').onclick = run;
+ed.addEventListener('keydown', e => {
+  if (e.key === 'Tab') { e.preventDefault(); const p = ed.selectionStart; ed.setRangeText('    ', p, ed.selectionEnd, 'end'); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); run(); }
+});
+
+/* ---------- 단축키: 문제 화면의 ← → 만 ---------- */
+addEventListener('keydown', e => {
+  if (document.activeElement === ed || $('quiz').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'ArrowRight' && $('nx') && !$('nx').disabled) $('nx').click();
+  else if (e.key === 'ArrowLeft') go(cur - 1);
+});
+
+if (location.hash === '#quiz') { history.replaceState({view: 'quiz', cur: 0, scope: null}, ''); startQuiz(0, null, true); }
+else history.replaceState({view: 'notes', y: 0}, '');
+})();
+</script>
+</body>
+</html>
