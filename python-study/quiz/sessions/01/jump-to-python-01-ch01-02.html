@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>점프 투 파이썬 문제집</title>
+<meta name="author" content="uyeon0">
+<link rel="author" href="https://yoouyeon.dev">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#ffffff;--ink:#171717;--ink2:#474747;--muted:#8c8c8c;--faint:#c4c4c4;--line:#e8e8e8;--codebg:#f6f6f6;
+  --hl:#dcf98a;--hld:#8fcf1a;--no:#e5484d;--nobg:#fff5f5;   /* --no: 틀림에만 쓴다 */
+  --r:8px;--ide:420px;
+  --mono:"JetBrains Mono","Wanted Sans Variable","Wanted Sans",monospace;
+  --sans:"Wanted Sans Variable","Wanted Sans",-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 var(--sans)}
+button{font:inherit;cursor:pointer;color:inherit}
+[hidden]{display:none!important}
+.app{display:flex;min-height:100vh}
+.stage{flex:1;min-width:0;position:relative}
+
+/* 위쪽 한 줄 */
+.line{position:sticky;top:0;z-index:5;height:56px;display:flex;align-items:center;gap:10px;padding:0 32px;font-size:13px;color:var(--muted);background:var(--bg)}
+.line .here{color:var(--ink);font-weight:500}
+.line .sp{margin-left:auto}
+.line .go{color:#fff;font:600 13px var(--sans);background:var(--ink);border:1px solid var(--ink);border-radius:8px;padding:6px 12px}
+.line .go:hover{background:#333}
+.line .go.sub{color:var(--ink);background:var(--bg);border-color:var(--line)}
+.line .go.sub:hover{border-color:var(--ink);background:var(--bg)}
+
+/* 노트 */
+.toc{position:fixed;left:40px;top:104px;font-size:13px;line-height:2.4}
+.toc a{display:block;color:var(--faint);text-decoration:none;position:relative}
+.toc a.on{color:var(--ink);font-weight:600}
+.toc a.on::before{content:'';position:absolute;left:-14px;top:50%;width:6px;height:6px;border-radius:50%;background:var(--hld);transform:translateY(-50%)}
+@media (max-width:1180px){.toc{display:none}}
+.ide-open .toc{display:none}
+.col{max-width:708px;margin:0 auto;padding:24px 24px 160px}
+.kicker{font-size:12px;color:var(--muted)}
+h1{font:700 32px/1.3 var(--sans);margin:6px 0 4px;letter-spacing:-.02em}
+.unit h2{font:700 26px/1.35 var(--sans);margin:64px 0 12px;letter-spacing:-.02em;scroll-margin-top:72px}
+.unit h3{font-size:19px;font-weight:700;margin:28px 0 8px;line-height:1.4;letter-spacing:-.01em}
+.unit p,.unit li{color:var(--ink2)}
+.unit p{margin:0 0 10px}
+mark{background:linear-gradient(transparent 50%,var(--hl) 50%,var(--hl) 94%,transparent 94%);color:var(--ink);padding:0 1px}
+code{font:.875em var(--mono);background:var(--codebg);border-radius:4px;padding:1px 5px}
+pre.code{background:var(--codebg);border-radius:var(--r);font:14px/1.7 var(--mono);padding:14px 18px;position:relative;margin:10px 0 14px;white-space:pre;overflow-x:auto;color:#1f1f1f}
+pre.code code{background:none;padding:0;font:inherit}
+.send{position:absolute;right:10px;top:10px;font:500 12px var(--sans);color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+.send:hover{color:var(--ink)}
+.viz{margin:8px 0 14px}
+.unit table{border-collapse:collapse;margin:8px 0 14px;font-size:15px}
+.unit th,.unit td{border-bottom:1px solid var(--line);padding:6px 14px 6px 0;text-align:left;vertical-align:top}
+.unit th{font-weight:600;color:var(--muted);font-size:12px}
+.unit a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--hld);text-decoration-thickness:2px;text-underline-offset:3px}
+.unit blockquote{margin:10px 0;padding:2px 0 2px 14px;border-left:3px solid var(--line);color:var(--ink2)}
+.unit ol,.unit ul{padding-left:22px;margin:6px 0 12px}
+.unit li{margin:2px 0}
+.unit p.lead{margin:18px 0 4px;color:var(--ink)}
+.viz svg{display:block;max-width:100%;height:auto}
+.end{border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;font-size:14px;margin-top:24px;width:100%;background:var(--bg);text-align:left}
+.end b{margin-left:auto}
+.end:hover{border-color:var(--ink)}
+.hlt{background:linear-gradient(transparent 55%,var(--hl) 55%,var(--hl) 92%,transparent 92%)}
+
+/* 질문형 펼침: 노트(.deep)와 해설(.why) */
+details.deep{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);margin:16px 0}
+.exp details.deep{margin:12px 0 4px;background:none;border:none;border-top:1px solid var(--line);border-radius:0}
+.exp details.deep>summary{padding:10px 0 4px;font-size:15px}
+.exp details.deep>.b{padding:4px 0 2px}
+.exp details.deep>.b::before{display:none}
+details.deep[open]{border-color:#cfcfcf}
+details.deep>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:15px;font-weight:600;color:var(--ink)}
+details.deep>summary::-webkit-details-marker{display:none}
+details.deep>summary::before{content:'?';flex:none;font:700 15px var(--mono);color:var(--hld)}
+details.deep>summary::after{content:'펼쳐 보기';margin-left:auto;flex:none;font:500 12px var(--sans);color:var(--muted)}
+details.deep[open]>summary::after{content:'접기'}
+details.deep>.b{padding:0 18px 14px;font-size:15px}
+details.deep>.b::before{content:'';display:block;border-top:1px solid var(--line);margin-bottom:12px}
+details.deep pre.code{background:var(--codebg)}
+
+/* 문제 */
+.track{display:flex;gap:3px;align-items:center;margin-left:8px}
+.track i{width:10px;height:4px;border-radius:2px;background:#ececec;display:block;cursor:pointer}
+.track i.ok{background:#bdbdbd}.track i.no{background:var(--no)}.track i.cur{background:var(--ink);width:18px}
+.track .g{width:8px}
+.quiz{max-width:628px;margin:0 auto;padding:28px 24px 140px}
+.quiz h2{font:700 24px/1.4 var(--sans);margin:16px 0 14px;letter-spacing:-.02em}
+.opts{display:flex;flex-direction:column;gap:8px}
+.o{border:1px solid var(--line);border-radius:var(--r);padding:11px 16px;display:flex;gap:14px;font:15px var(--mono);background:var(--bg);text-align:left;width:100%}
+.o:hover{border-color:#bdbdbd}
+.o .k{color:var(--faint);font-family:var(--sans)}
+.o .v.txt{font-family:var(--sans);font-size:15px}
+.o .t{margin-left:auto;font:600 12px var(--sans);color:var(--muted)}
+.o.mine{border-color:var(--no);background:var(--nobg)}
+.o.mine .t{color:var(--no)}
+.o.mine .k{color:var(--no)}
+.o.ans{border:1px solid var(--ink);padding:11px 16px}
+.o.ans .v{background:linear-gradient(transparent 40%,var(--hl) 40%,var(--hl) 96%,transparent 96%);padding:0 3px;font-weight:600}
+.o.ans .t{color:var(--ink)}
+.o[disabled]{cursor:default}
+.exp{margin-top:18px;padding:14px 18px;border-radius:var(--r);background:#fafafa;font-size:15px;color:var(--ink2)}
+.exp b{color:var(--ink)}
+.exp .rel{display:block;margin-top:12px;color:var(--ink);font-weight:600;font-size:13px;text-decoration:underline;text-decoration-color:var(--hld);text-decoration-thickness:2px;text-underline-offset:3px;background:none;border:none;padding:0}
+.qnav{position:fixed;bottom:28px;display:grid;grid-template-columns:140px 132px 140px;gap:8px;align-items:center;transform:translateX(-50%);z-index:6}
+.qnav>:nth-child(1){justify-self:end}.qnav>:nth-child(2){justify-self:center;width:132px;padding-left:0;padding-right:0}.qnav .count{font:500 13px var(--sans);color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.qnav>:nth-child(3){justify-self:start;white-space:nowrap}
+.btn{border:1px solid var(--line);border-radius:8px;padding:8px 16px;font:600 13px var(--sans);background:var(--bg)}
+.btn.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:default}
+
+/* Python 알약 + IDE */
+.pill{position:fixed;right:28px;bottom:28px;z-index:9;border-radius:99px;padding:9px 18px;font:600 13px var(--sans);background:var(--bg);color:var(--ink);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.pill:hover{border-color:var(--ink)}
+.ide-open .pill{right:calc(var(--ide) + 28px)}
+.ide{width:0;overflow:hidden;position:sticky;top:0;height:100vh;background:#f7f7f7;border-left:1px solid var(--line);display:flex;flex-direction:column;transition:width .18s}
+.ide-open .ide{width:var(--ide)}
+.ide .hd{height:56px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;font:600 13px var(--sans);border-bottom:1px solid var(--line);min-width:var(--ide)}
+.ide .hd .sp{margin-left:auto}
+.ide .st{font:500 11px var(--sans);color:var(--muted)}
+.ide textarea{flex:1;border:none;background:transparent;font:13px/1.8 var(--mono);padding:14px 16px;resize:none;outline:none;min-width:var(--ide);color:#1f1f1f;tab-size:4}
+.ide .out{height:200px;flex:none;border-top:1px solid var(--line);padding:12px 16px;font:13px/1.6 var(--mono);background:var(--bg);overflow:auto;white-space:pre-wrap;min-width:var(--ide)}
+.ide .out small{display:block;font:600 11px var(--sans);color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+.ide .err{color:#b42318}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="stage" id="stage">
+    <div id="notes">
+      <div class="line"><span id="chap"></span><span>›</span><span class="here" id="curUnit"></span><button class="sp go" id="toQuiz">문제 풀기 →</button></div>
+      <nav class="toc" id="toc"></nav>
+      <div class="col">
+        <div class="kicker" id="kicker"></div>
+        <h1 id="title"></h1>
+        <div id="units"></div>
+      </div>
+    </div>
+    <div id="quiz" hidden>
+      <div class="line"><span id="chap2"></span><span>›</span><span class="here" id="qWhere"></span><span class="track" id="track"></span><button class="sp go sub" id="toNotes">← 노트 보기</button></div>
+      <div class="quiz" id="qBody"></div>
+      <div class="qnav" id="qnav"></div>
+    </div>
+  </div>
+  <aside class="ide" id="ide" aria-label="Python 실행기">
+    <div class="hd">Python <span class="st" id="ideSt"></span><button class="sp btn" id="clear">비우기</button><button class="btn p" id="runBtn">▶ 실행</button></div>
+    <textarea id="ed" spellcheck="false" placeholder=""></textarea>
+    <div class="out"><small>출력</small><span id="out"></span></div>
+  </aside>
+</div>
+<button class="pill" id="pill">▶ Python</button>
+
+<script>
+window.WORKBOOK = {
+  title: "1–2장 파이썬 시작과 자료형",
+  kicker: "점프 투 파이썬 스터디 · 1회차",
+  chapter: "01–02장",
+  range: "ch01-02",   // 결과 파일 이름에 쓰인다 (jump-to-python-01-ch01-02.html)
+
+  units: [
+    {
+      id: "1",
+      title: "1 파이썬과 인터프리터",
+      html: `
+<h3>파이썬이란</h3>
+<p>파이썬은 1991년 네덜란드의 귀도 반 로섬이 만든 프로그래밍 언어다. 이름은 귀도가 좋아하던 코미디 프로그램 '몬티 파이썬의 날아다니는 서커스'에서 따 왔다. python이라는 단어 자체는 그리스 신화에서 파르나소스 산 동굴에 살던 큰 뱀, 피톤의 이름이다. 파이썬 로고에 뱀이 그려진 이유다.</p>
+
+<h3>파이썬의 특징</h3>
+<blockquote>Life is too short, You need python.</blockquote>
+<p>파이썬은 <mark>사람이 코드를 짜는 속도가 빠른 언어</mark>다. 컴퓨터가 코드를 실행하는 속도는 오히려 C나 Java보다 느린 편이다. 실행 성능을 조금 내주고 사람의 시간을 아끼는 쪽을 택한 언어다.</p>
+<ul>
+  <li><b>코드가 짧다</b>: 같은 일을 하는 코드가 다른 언어보다 짧다.</li>
+  <li><b>읽기 쉽다</b>: 영어 문장처럼 읽힌다. <code>if 4 in [1, 2, 3, 4]:</code>는 "만약 4가 1, 2, 3, 4 안에 있으면"으로 읽으면 된다.</li>
+  <li><b>값의 종류를 미리 적지 않는다</b>: 변수를 만들 때 "여기엔 숫자만 넣겠다"처럼 미리 정하지 않고 바로 값을 넣는다.</li>
+  <li><b>고치고 바로 돌려 볼 수 있다</b>: 따로 실행 파일을 만드는 단계 없이 코드를 바로 실행한다.</li>
+  <li><b>이미 만들어진 도구가 많다</b>: 파이썬을 설치하면 딸려 오는 도구가 넉넉하고, 없는 건 <code>pip</code>라는 명령으로 내려받아 쓴다.</li>
+</ul>
+<details class="deep"><summary>이 특징들은 개발 용어로 뭐라고 부를까?</summary>
+<ul>
+  <li>값의 종류(타입)를 미리 적지 않는 것을 <b>동적 타이핑</b>이라고 한다. 편한 대신 타입 실수는 실행해 봐야 드러난다.</li>
+  <li>실행 파일을 만드는 단계 없이 바로 실행하는 언어를 <b>인터프리터 언어</b>라고 한다. 아래 "파이썬 인터프리터"에서 다룬다.</li>
+  <li>설치하면 딸려 오는 도구 모음을 <b>표준 라이브러리</b>라고 한다. 파이썬은 이게 넉넉하다는 뜻으로 "batteries included(배터리 포함)"라고 부른다.</li>
+  <li>들여쓰기가 문법이라 누가 써도 코드 모양이 비슷하고, 다시 읽고 이해하는 시간이 줄어든다.</li>
+</ul>
+</details>
+
+<h3>파이썬으로 할 수 있는 것</h3>
+<ol>
+  <li><b>웹 프로그래밍</b>: 플라스크(Flask)</li>
+  <li><b>인공지능</b>: 사이킷런(scikit-learn), 텐서플로(TensorFlow), 케라스(Keras), 파이토치(PyTorch)</li>
+  <li><b>수치 연산</b>: 넘파이(NumPy)</li>
+  <li><b>데이터 분석</b>: 넘파이, 판다스(pandas), 맷플롯립(Matplotlib)</li>
+  <li><b>데이터 저장</b>: 피클(pickle). 데이터베이스는 아니고, 파이썬에서 만든 값을 파일에 그대로 저장했다가 다시 불러오는 도구다.</li>
+</ol>
+
+<h3>파이썬 인터프리터</h3>
+<p>컴퓨터는 사람이 쓴 코드를 바로 알아듣지 못해서, 중간에 번역해 주는 프로그램이 필요하다. 번역하는 방식은 두 가지다.</p>
+<ul>
+  <li><b>컴파일러</b>: 코드 전체를 미리 번역해 실행 파일을 만들어 둔다. 실행은 그 파일로 한다. (C 등)</li>
+  <li><b>인터프리터</b>: 실행 파일 없이 코드를 읽어 가며 바로 실행한다. 파이썬이 이쪽이다.</li>
+</ul>
+<details class="deep"><summary>파이썬은 정말 코드를 읽어 가며 바로 실행할까?</summary>
+<p>엄밀히 보면 CPython(가장 널리 쓰는 파이썬)은 두 단계를 거친다.</p>
+<ol>
+  <li>소스 코드를 <b>바이트코드</b>라는 중간 형태로 컴파일한다. (<code>.pyc</code> 파일로 저장해 두기도 한다)</li>
+  <li><b>파이썬 가상 머신</b>이 바이트코드를 실행한다.</li>
+</ol>
+<p>이 과정이 자동으로 일어나서 사용자에게는 코드가 바로 실행되는 것처럼 보인다. 그래서 공식 용어집도 인터프리터 언어와 컴파일 언어의 경계가 흐릿하다고 말한다. 같은 파이썬도 PyPy처럼 실행 중에 기계어로 컴파일(JIT)하는 구현이 있다.</p>
+<p>참고: <a href="https://docs.python.org/3/glossary.html#term-interpreted" target="_blank">Python 용어집 - interpreted</a>, <a href="https://docs.python.org/3/glossary.html#term-bytecode" target="_blank">bytecode</a>, <a href="https://docs.python.org/3/glossary.html#term-virtual-machine" target="_blank">virtual machine</a></p>
+</details>
+
+<h3>파이썬을 실행하는 두 가지 방법</h3>
+<ul>
+  <li><b>대화형 모드</b>: 터미널에 <code>python</code>을 입력해 들어가서 코드를 한 줄씩 입력한다. 이 창을 <b>대화형 인터프리터</b> 또는 <b>파이썬 셸</b>이라고 부른다.</li>
+  <li><b>파일 실행</b>: 코드를 <code>.py</code> 파일로 저장해 두고 <code>python hello.py</code>처럼 실행한다.</li>
+</ul>
+<pre class="code"><code>&gt;&gt;&gt; 1 + 1
+2</code></pre>
+<p><code>&gt;&gt;&gt;</code> 표시를 <b>프롬프트</b>라고 한다. "여기에 입력하세요"라는 표시다. 한 줄을 입력하면 바로 실행되고 결과가 나온다. 주고받는 모습이 대화하는 것 같아서 '대화형'이라고 한다.</p>
+<p>두 방법은 결과를 보여 주는 방식이 다르다. <mark>대화형 모드는 계산한 값을 <code>print</code> 없이도 보여 주지만, 파일로 실행하면 <code>print</code>로 출력하라고 한 것만 보인다.</mark></p>
+<pre class="code"><code># test.py
+1 + 1          # 계산은 하지만 화면에는 아무것도 안 나온다
+print(1 + 1)   # 2</code></pre>
+<p>이 문제집의 Python 실행기는 파일 실행 방식이다. 그래서 아래 예제들은 결과를 모두 <code>print</code>로 출력한다.</p>
+<details class="deep"><summary>대화형 모드는 어떻게 print 없이 값을 보여 줄까?</summary>
+<p>대화형 모드의 일반적인 이름은 <b>REPL</b>(Read-Eval-Print Loop)이다. 입력을 읽고(Read) 실행하고(Eval) 결과를 출력하는(Print) 일을 반복한다(Loop). 이때 Print 단계에서 식의 값을 <code>sys.displayhook</code>에 넘겨 화면에 보여 준다. 파일로 실행할 때는 이 단계가 없다.</p>
+<p>참고: <a href="https://docs.python.org/3/glossary.html#term-REPL" target="_blank">Python 용어집 - REPL</a>, <a href="https://docs.python.org/3/library/sys.html#sys.displayhook" target="_blank">sys.displayhook</a>, <a href="https://docs.python.org/3/tutorial/interpreter.html#interactive-mode" target="_blank">Python 튜토리얼 - 대화형 모드</a></p>
+</details>
+
+<h3>기초 문법 맛보기</h3>
+<p>2장부터 하나씩 자세히 다루니 지금은 모양만 본다.</p>
+<p class="lead"><b>사칙 연산과 변수</b></p>
+<pre class="code"><code>print(1 + 2)    # 3
+print(7 / 2)    # 3.5
+a = 1
+b = 2
+print(a + b)    # 3</code></pre>
+<p class="lead"><b>조건문</b></p>
+<pre class="code"><code>a = 15
+if a &gt; 10:
+    print("a는 10보다 크다")</code></pre>
+<p><code>if 조건:</code> 아래에 조건이 참일 때 실행할 문장을 둔다. 이렇게 한 덩어리로 묶인 문장들을 <b>블록</b>이라고 한다.</p>
+<p><mark>블록 안의 문장은 반드시 들여쓰기를 해야 한다.</mark> 파이썬은 중괄호 대신 들여쓰기로 블록을 구분하기 때문에, 들여쓰기를 빼먹으면 <code>IndentationError</code>가 난다.</p>
+<p class="lead"><b>반복문</b></p>
+<pre class="code"><code>for a in [1, 2, 3]:
+    print(a)
+
+i = 0
+while i &lt; 3:
+    i = i + 1
+    print(i)</code></pre>
+<p><code>for a in 여러 값:</code>은 "여러 값 안의 <code>a</code> 하나마다 블록을 실행한다", <code>while 조건:</code>은 "조건이 참인 동안 블록을 반복한다"로 읽으면 된다.</p>
+<p class="lead"><b>함수</b></p>
+<pre class="code"><code>def add(a, b):
+    return a + b
+
+print(add(3, 4))   # 7</code></pre>
+<p>함수는 <code>def</code>로 만든다. <code>return 값</code>은 "이 값을 결과로 돌려준다(반환한다)"는 뜻이다.</p>
+<p><code>def</code>처럼 파이썬 문법이 이미 쓰고 있는 단어를 <b>예약어</b>라고 한다. 변수나 함수 이름으로 쓸 수 없다.</p>
+<pre class="code"><code>def = 1   # SyntaxError: invalid syntax</code></pre>
+<p class="lead"><b>주석</b></p>
+<p>주석은 코드에 남기는 메모다. 실행되지 않는다.</p>
+<pre class="code"><code># 한 줄 주석은 #으로 시작한다
+a = 1  # 코드 뒤에 붙여도 된다
+
+"""
+여러 줄 주석은
+큰따옴표 세 개로 감싼다
+"""</code></pre>
+<p>작은따옴표 세 개(<code>'''</code>)로 감싸도 된다. 따옴표 세 개 블록의 정체는 2-2 문자열에서 다시 본다.</p>
+
+<h3>에디터</h3>
+<p>대화형 모드는 여러 줄짜리 코드를 쓰기 불편하고, 종료하면 입력한 코드가 사라진다. 그래서 반복해서 쓸 코드는 <b>에디터</b>(코드 편집 프로그램)에서 <code>.py</code> 파일로 저장한다.</p>
+<p><b>IDLE</b>은 파이썬을 설치하면 함께 깔리는 에디터다. Integrated Development and Learning Environment의 약자이고 '아이들'이라고 읽는다. 기능이 단순해서 입문용으로 좋다.</p>
+<ul>
+  <li><b>셸 창</b>: 앞에서 본 대화형 모드다. <code>&gt;&gt;&gt;</code>에 한 줄씩 입력하고 바로 결과를 본다.</li>
+  <li><b>에디터 창</b>: 코드를 파일로 작성하고 저장한다. 코드 색 구분, 자동 들여쓰기, 자동 완성이 있고 작성한 파일을 바로 실행할 수 있다.</li>
+</ul>
+<details class="deep"><summary>IDLE이라는 이름은 어디서 왔을까?</summary>
+<p>원래 README에는 "Integrated DeveLopment Environment"라고, 대문자 L로 억지로 약자를 맞춰 적혀 있었다. 지금의 "Learning"은 2015년 IDLE 관리자 Terry Reedy의 제안으로 새로 붙은 해석이다. 이 제안에 귀도 반 로섬은 이렇게 답했다.</p>
+<blockquote>"Though of course it's really named after Eric Idle. :-)"</blockquote>
+<p>파이썬이 몬티 파이썬에서 이름을 따왔듯, IDLE도 몬티 파이썬 멤버 에릭 아이들(Eric Idle)에서 따온 이름이었다. 같은 스레드에서 귀도는 살아 있는 사람의 이름을 그대로 붙이기가 망설여졌던 것 같다고 덧붙였다. (<a href="https://mail.python.org/pipermail/idle-dev/2015-October/003636.html" target="_blank">메일 1</a>, <a href="https://mail.python.org/pipermail/idle-dev/2015-October/003638.html" target="_blank">메일 2</a>)</p>
+</details>`
+    },
+    {
+      id: "2-1",
+      title: "2-1 숫자형",
+      html: `
+<p><b>자료형</b>은 값의 종류다. 숫자, 문자열, 목록처럼 종류마다 할 수 있는 일이 다르다. 2장은 파이썬의 기본 자료형을 하나씩 본다.</p>
+<p>숫자형은 숫자로 이루어진 자료형이다.</p>
+
+<h3>정수와 실수</h3>
+<p>소수점이 없는 수(<code>123</code>, <code>-178</code>, <code>0</code>)가 <b>정수</b>, 소수점이 있는 수(<code>1.2</code>, <code>-3.45</code>)가 <b>실수</b>다.</p>
+<p>아주 크거나 작은 실수는 <code>e</code>를 써서 짧게 적을 수 있다. <code>e</code>는 "× 10의 거듭제곱"이라는 뜻이다. <code>e</code> 뒤의 숫자만큼 소수점을 옮긴다고 보면 된다. 양수면 오른쪽, 음수면 왼쪽이다.</p>
+<pre class="code"><code>print(4.24e10)    # 42400000000.0  (4.24 × 10¹⁰)
+print(4.24e-10)   # 4.24e-10       (4.24 × 10⁻¹⁰)
+print(1e3)        # 1000.0         (1 × 10³)</code></pre>
+
+<h3>8진수와 16진수</h3>
+<p>같은 정수를 다른 진법으로 적는 방법이다. 8진수는 <code>0o</code>, 16진수는 <code>0x</code>로 시작한다. 자주 쓰지는 않고, 파일 권한이나 색상 코드에서 가끔 볼 수 있다.</p>
+<pre class="code"><code>print(0o17)   # 15   8진수 17 = 1×8 + 7
+print(0xFF)   # 255  16진수 FF = 15×16 + 15</code></pre>
+<details class="deep"><summary>8진수와 16진수는 실제로 어디에 쓰일까?</summary>
+<p>엄밀히 말하면 8진수와 16진수는 따로 있는 자료형이 아니다. 적는 방법만 다를 뿐 결과는 똑같은 정수(<code>int</code>)다.</p>
+<pre class="code"><code>print(type(0o17), type(0xFF))   # &lt;class 'int'&gt; &lt;class 'int'&gt;</code></pre>
+<p><b>파일 권한 (8진수)</b>: 리눅스·macOS의 파일 권한은 읽기(4), 쓰기(2), 실행(1)을 더한 숫자 세 자리로 나타낸다. 각 자리가 0~7이라 8진수와 딱 맞는다. <code>755</code>는 "주인은 읽기·쓰기·실행(7), 나머지는 읽기·실행(5)"이라는 뜻이다. <code>0o</code>를 빼고 <code>755</code>라고 쓰면 10진수 755로 읽혀서 전혀 다른 권한이 된다.</p>
+<pre class="code norun"><code>import os
+os.chmod("hello.py", 0o755)   # 터미널의 chmod 755 hello.py와 같다</code></pre>
+<p><b>색상 코드 (16진수)</b>: 웹에서 쓰는 <code>#FF8800</code> 같은 색상 코드는 빨강·초록·파랑을 두 자리씩 16진수로 적은 것이다. 두 자리 한 쌍이 0~255를 나타낸다.</p>
+<pre class="code"><code>r, g, b = 0xFF, 0x88, 0x00   # #FF8800
+print(r, g, b)               # 255 136 0</code></pre>
+</details>
+
+<h3>연산자</h3>
+<p><b>연산자</b>는 계산을 시키는 기호다.</p>
+<table><tr><th>연산자</th><th>뜻</th><th>예</th></tr>
+<tr><td><code>+ - *</code></td><td>더하기, 빼기, 곱하기</td><td><code>2 * 3</code> → 6</td></tr>
+<tr><td><code>/</code></td><td>나누기</td><td><code>7 / 2</code> → 3.5</td></tr>
+<tr><td><code>**</code></td><td>거듭제곱</td><td><code>2 ** 10</code> → 1024</td></tr>
+<tr><td><code>%</code></td><td>나머지 (모듈러 연산)</td><td><code>7 % 3</code> → 1</td></tr>
+<tr><td><code>//</code></td><td>몫</td><td><code>7 // 2</code> → 3</td></tr></table>
+<p><mark><code>/</code>는 나누어떨어져도 결과가 항상 실수다.</mark></p>
+<pre class="code"><code>print(7 / 2)    # 3.5
+print(4 / 2)    # 2.0
+print(2 ** 10)  # 1024
+print(7 % 3)    # 1
+print(7 // 2)   # 3</code></pre>
+<details class="deep"><summary>//는 정말 몫일까?</summary>
+<p>엄밀히 말하면 <code>//</code>는 "몫"이 아니라 "나눈 결과보다 작거나 같은 가장 큰 정수", 즉 내림을 돌려준다. 그래서 두 가지를 조심해야 한다.</p>
+<ul>
+  <li>실수가 끼면 결과도 실수다. <code>7.0 // 2</code>는 <code>3.0</code>이다.</li>
+  <li>음수를 나누면 0 쪽이 아니라 더 작은 쪽으로 내린다. <code>-7 // 2</code>는 <code>-3</code>이 아니라 <code>-4</code>다.</li>
+</ul>
+<div class="viz"><svg width="420" height="80" viewBox="0 0 420 80">
+  <line x1="20" y1="40" x2="400" y2="40" stroke="#171717" stroke-width="1.2"/>
+  <g font-family="JetBrains Mono" font-size="13" text-anchor="middle">
+    <line x1="60" y1="34" x2="60" y2="46" stroke="#171717"/><text x="60" y="66">-5</text>
+    <line x1="140" y1="34" x2="140" y2="46" stroke="#171717"/>
+    <line x1="220" y1="34" x2="220" y2="46" stroke="#171717"/><text x="220" y="66">-3</text>
+    <line x1="300" y1="34" x2="300" y2="46" stroke="#171717"/><text x="300" y="66">-2</text>
+    <circle cx="180" cy="40" r="5" fill="#171717"/><text x="180" y="22">-3.5</text>
+    <rect x="124" y="54" width="32" height="18" rx="9" fill="var(--hl)"/><text x="140" y="67" font-weight="600">-4</text>
+    <path d="M174 40 L150 40" stroke="#171717" stroke-width="1.5"/><path d="M154 36 L148 40 L154 44" fill="none" stroke="#171717" stroke-width="1.5"/>
+  </g>
+</svg></div>
+<pre class="code"><code>print(7.0 // 2)   # 3.0
+print(-7 // 2)    # -4</code></pre>
+</details>
+
+<h3>복합 연산자</h3>
+<p>계산한 결과를 같은 변수에 다시 넣을 때 줄여 쓰는 연산자다. <code>a += 1</code>은 <code>a = a + 1</code>과 같다. <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>//=</code>, <code>%=</code>, <code>**=</code>도 있다.</p>
+<pre class="code"><code>a = 1
+a += 1     # a = a + 1
+print(a)   # 2
+a *= 3     # a = a * 3
+print(a)   # 6</code></pre>`
+    },
+    {
+      id: "2-2",
+      title: "2-2 문자열 기본",
+      html: `
+<p><b>문자열</b>은 글자들을 늘어놓은 값이다. 따옴표로 감싸서 만든다.</p>
+
+<h3>문자열 만들기</h3>
+<p>큰따옴표, 작은따옴표, 따옴표 세 개 모두 된다.</p>
+<pre class="code"><code>print("Hello World")
+print('Hello World')
+print("""Hello World""")
+print('''Hello World''')</code></pre>
+<h3>문자열 안에 따옴표 넣기</h3>
+<p>글자 중에 따옴표가 있으면, 파이썬이 그걸 문자열의 끝으로 착각할 수 있다. 방법은 두 가지다.</p>
+<ol>
+  <li><b>다른 따옴표로 감싼다.</b> 안에 작은따옴표가 있으면 큰따옴표로 감싸고, 반대도 마찬가지다.</li>
+  <li><b>따옴표 앞에 역슬래시(<code>\\</code>)를 붙인다.</b> <code>\\</code> 바로 뒤의 따옴표는 끝 표시가 아니라 글자 그 자체가 된다.</li>
+</ol>
+<pre class="code"><code>print("Python's favorite")              # 1. 다른 따옴표로 감싸기
+print('Python\\'s favorite')             # 2. 역슬래시 쓰기
+print("\\"Python is easy\\" he says.")</code></pre>
+<p>이렇게 역슬래시로 시작해 특별한 뜻을 갖는 글자 조합을 <b>이스케이프 코드</b>라고 한다.</p>
+<table><tr><th>코드</th><th>뜻</th></tr>
+<tr><td><code>\\n</code></td><td>줄바꿈</td></tr>
+<tr><td><code>\\t</code></td><td>탭</td></tr>
+<tr><td><code>\\\\</code></td><td>역슬래시 글자 자체</td></tr>
+<tr><td><code>\\'</code>, <code>\\"</code></td><td>따옴표 글자 자체</td></tr></table>
+<h3>여러 줄 문자열</h3>
+<p>줄바꿈을 넣으려면 <code>\\n</code>을 쓴다. 따옴표 세 개로 감싸면 <code>\\n</code> 없이 눈에 보이는 줄바꿈이 그대로 들어간다.</p>
+<pre class="code"><code>print("Life is too short\\nYou need python")
+multiline = """Life is too short
+You need python"""
+print(multiline)</code></pre>
+<details class="deep"><summary>1장에서 주석처럼 쓴 따옴표 세 개 블록은 정말 주석일까?</summary>
+<p>아니다. 파이썬 문법이 정의하는 주석은 <code>#</code>뿐이다. 따옴표 세 개 블록은 여러 줄 문자열이다. 어디에도 쓰이지 않는 문자열이라 실행에 영향이 없어서 주석처럼 보였던 것이다. 함수 맨 첫 줄에 두면 주석이 아니라 함수 설명(독스트링)이 된다.</p>
+<p>대화형 모드에 넣어 보면 차이가 드러난다. <code>#</code> 주석은 아무 반응이 없지만, 따옴표 세 개 블록은 문자열 값으로 처리되어 그대로 출력된다.</p>
+<pre class="code"><code>&gt;&gt;&gt; # 주석
+&gt;&gt;&gt; """
+... 주석인 줄 알았는데
+... """
+'\\n주석인 줄 알았는데\\n'</code></pre>
+<p>참고: <a href="https://docs.python.org/3/reference/lexical_analysis.html#comments" target="_blank">Python 문법 - 주석</a></p>
+</details>
+
+<h3>문자열 더하기, 곱하기, 길이</h3>
+<p>문자열은 <code>+</code>로 이어 붙이고, <code>*</code>로 반복한다. 길이는 <code>len</code>으로 구하고, 공백도 한 글자로 센다.</p>
+<pre class="code"><code>print("Python" + " is fun!")      # Python is fun!
+print("python" * 2)               # pythonpython
+print(len("Life is too short"))   # 17</code></pre>
+<p>곱하기는 화면에 구분선을 그릴 때 편하다.</p>
+<pre class="code"><code>print("=" * 50)
+print("My Program")
+print("=" * 50)</code></pre>
+
+<h3>인덱싱: 한 글자 꺼내기</h3>
+<p>문자열의 글자마다 번호가 붙어 있다. 이 번호를 <b>인덱스</b>라고 하고, <mark>0부터 센다.</mark> <code>a[3]</code>은 0, 1, 2, 3을 세어 네 번째 글자다. 뒤에서부터 셀 때는 <code>-1</code>이 마지막 글자다.</p>
+<div class="viz"><svg width="440" height="96" viewBox="0 0 440 96">
+  <g font-family="JetBrains Mono" text-anchor="middle">
+    <g font-size="11" fill="#8c8c8c"><text x="40" y="14">0</text><text x="100" y="14">1</text><text x="160" y="14">2</text><text x="220" y="14">3</text><text x="280" y="14">4</text><text x="340" y="14">5</text></g>
+    <rect x="70" y="22" width="180" height="40" fill="var(--hl)"/>
+    <g fill="none" stroke="#171717" stroke-width="1.2"><rect x="10" y="22" width="360" height="40" rx="6"/><line x1="70" y1="22" x2="70" y2="62"/><line x1="130" y1="22" x2="130" y2="62"/><line x1="190" y1="22" x2="190" y2="62"/><line x1="250" y1="22" x2="250" y2="62"/><line x1="310" y1="22" x2="310" y2="62"/></g>
+    <g font-size="17"><text x="40" y="48">p</text><text x="100" y="48">y</text><text x="160" y="48">t</text><text x="220" y="48">h</text><text x="280" y="48">o</text><text x="340" y="48">n</text></g>
+    <g font-size="11" fill="#8c8c8c"><text x="40" y="80">-6</text><text x="100" y="80">-5</text><text x="160" y="80">-4</text><text x="220" y="80">-3</text><text x="280" y="80">-2</text><text x="340" y="80">-1</text></g>
+    <text x="384" y="47" font-size="12" text-anchor="start">[1:4]</text>
+  </g>
+</svg></div>
+<pre class="code"><code>a = "Life is too short, You need Python"
+print(a[0])    # L
+print(a[3])    # e
+print(a[-1])   # n
+print(a[-2])   # o</code></pre>
+<p>마지막 글자가 <code>-0</code>이 아니라 <code>-1</code>인 이유는 <code>-0</code>과 <code>0</code>이 같은 값이기 때문이다. <code>a[-0]</code>은 <code>a[0]</code>과 같다.</p>
+
+<h3>슬라이싱: 여러 글자 잘라 내기</h3>
+<p><code>a[시작:끝]</code>으로 범위를 잘라 낸다. <mark>시작은 포함하고 끝은 포함하지 않는다.</mark> 시작을 비우면 처음부터, 끝을 비우면 마지막까지다.</p>
+<pre class="code"><code>a = "Life is too short, You need Python"
+print(a[0:4])     # Life  (0, 1, 2, 3번)
+print(a[:17])     # Life is too short
+print(a[19:])     # You need Python
+print(a[19:-7])   # You need</code></pre>
+<p>인덱싱과 슬라이싱은 뒤에 나올 리스트, 튜플에서도 똑같이 쓴다.</p>
+<details class="deep"><summary>슬라이싱의 세 번째 칸은 무엇일까?</summary>
+<p><code>a[시작:끝:간격]</code>으로 쓰면 간격만큼 건너뛰며 자른다. 생략하면 1이다. 간격이 음수면 거꾸로 간다. 그래서 <code>a[::-1]</code>은 문자열을 뒤집는 관용구로 쓰인다.</p>
+<pre class="code"><code>print("0123456789"[::2])     # 02468
+print("0123456789"[1:8:3])   # 147
+print("Python"[::-1])        # nohtyP</code></pre>
+</details>
+
+<h3>문자열은 바꿀 수 없다</h3>
+<p>한 번 만든 문자열은 한 글자만 골라 바꿀 수 없다. 이런 값을 <b>변경 불가능(immutable)</b>하다고 한다. 바꾸려면 슬라이싱으로 잘라 붙여 새 문자열을 만든다.</p>
+<pre class="code"><code>a = "Pithon"
+print(a[:1] + "y" + a[2:])   # Python
+a[1] = "y"                   # TypeError: 'str' object does not support item assignment</code></pre>`
+    },
+    {
+      id: "2-3",
+      title: "2-3 문자열 포매팅과 함수",
+      html: `
+<p><b>포매팅</b>은 문자열의 정해진 자리에 값을 끼워 넣는 것이다. "I eat <u>3</u> apples."에서 숫자만 바꿔 가며 쓰고 싶을 때 쓴다. 방법이 세 가지 있고, 요즘은 주로 f 문자열을 쓴다.</p>
+
+<h3>1. % 방식</h3>
+<p>문자열 안에 <code>%d</code>, <code>%s</code> 같은 자리 표시(포맷 코드)를 넣고, 뒤에 <code>%</code>와 값을 쓴다. 값이 여러 개면 괄호로 묶는다.</p>
+<pre class="code"><code>print("I eat %d apples." % 3)
+print("I ate %d apples. so I was sick for %s days." % (10, "three"))</code></pre>
+<table><tr><th>코드</th><th>뜻</th></tr>
+<tr><td><code>%s</code></td><td>문자열 (어떤 값이든 문자열로 바꿔 넣는다)</td></tr>
+<tr><td><code>%c</code></td><td>문자 1개</td></tr>
+<tr><td><code>%d</code></td><td>정수</td></tr>
+<tr><td><code>%f</code></td><td>실수</td></tr>
+<tr><td><code>%o</code></td><td>8진수</td></tr>
+<tr><td><code>%x</code></td><td>16진수</td></tr>
+<tr><td><code>%%</code></td><td><code>%</code> 글자 자체</td></tr></table>
+<p>포맷 코드가 있는 문자열에서 <code>%</code> 글자를 쓰려면 <code>%%</code>로 적는다.</p>
+<pre class="code"><code>print("Error is %d%%." % 98)   # Error is 98%.</code></pre>
+<p>코드 앞에 숫자를 넣으면 그 칸 수만큼 자리를 잡고 오른쪽에 붙인다. 음수면 왼쪽에 붙인다. <code>%f</code> 앞에 <code>.4</code>를 붙이면 소수점 아래 4자리까지 보여 준다. 둘을 합친 <code>%10.4f</code>는 "전체 10칸, 소수점 아래 4자리"다. 10칸에는 소수점과 소수부까지 모두 들어간다.</p>
+<pre class="code"><code>print("%10s|" % "hi")           #         hi|
+print("%-10s|" % "hi")          # hi        |
+print("%.4f" % 3.42134234)      # 3.4213
+print("%10.4f|" % 3.42134234)   #     3.4213|</code></pre>
+
+<h3>2. format 함수</h3>
+<p>문자열의 <code>{}</code> 자리에 <code>format</code>으로 넘긴 값이 들어간다. 순서 번호로도, 이름으로도, 섞어서도 넣을 수 있다.</p>
+<pre class="code"><code>print("I ate {0} apples. so I was sick for {1} days.".format(10, "three"))
+print("I ate {number} apples. so I was sick for {day} days.".format(number=10, day=3))
+print("I ate {0} apples. so I was sick for {day} days.".format(10, day=3))</code></pre>
+<p><code>:</code> 뒤에 정렬과 채우기를 쓴다. <code>&lt;</code>는 왼쪽, <code>&gt;</code>는 오른쪽, <code>^</code>는 가운데다. 정렬 기호 앞에 글자를 하나 두면 빈칸을 그 글자로 채운다. 소수점은 <code>%</code> 방식처럼 <code>.4f</code>로 쓴다.</p>
+<pre class="code"><code>print("{0:&lt;10}|".format("hi"))           # hi        |
+print("{0:&gt;10}|".format("hi"))           #         hi|
+print("{0:^10}|".format("hi"))           #     hi    |
+print("{0:=^10}".format("hi"))           # ====hi====
+print("{0:10.4f}|".format(3.42134234))   #     3.4213|</code></pre>
+<p>중괄호 글자 자체를 쓰려면 <code>{{</code>, <code>}}</code>처럼 두 번 쓴다.</p>
+<pre class="code"><code>print("{{ and }}".format())   # { and }</code></pre>
+<details class="deep"><summary>% 방식으로는 왜 가운데 정렬을 못 할까?</summary>
+<p><code>%</code> 방식에는 가운데 정렬 기호가 없고, 빈칸 채우기도 <code>%05d</code>처럼 0으로 채우는 것만 된다. 가운데 정렬이나 다른 글자로 채우기는 <code>format</code>이나 f 문자열에서만 된다.</p>
+</details>
+
+<h3>3. f 문자열</h3>
+<p>문자열 앞에 <code>f</code>를 붙이고 중괄호 안에 변수 이름을 바로 쓴다. 파이썬 3.6부터 쓸 수 있다. 중괄호 안에 <code>age + 1</code> 같은 계산식도 넣을 수 있다.</p>
+<pre class="code"><code>name = "홍길동"
+age = 30
+print(f"나의 이름은 {name}입니다. 나이는 {age}입니다.")
+print(f"나는 내년이면 {age + 1}살이 된다.")</code></pre>
+<p>정렬, 채우기, 소수점은 <code>format</code>과 같다. <code>,</code>를 넣으면 천 단위마다 쉼표를 찍는다.</p>
+<pre class="code"><code>print(f"{'hi':=^10}")          # ====hi====
+print(f"{3.42134234:.4f}")     # 3.4213
+print(f"{1500000:,}")          # 1,500,000
+print(f"{1234567.891:,.2f}")   # 1,234,567.89</code></pre>
+<details class="deep"><summary>format에서는 중괄호 안에 계산식을 못 쓸까?</summary>
+<p><code>format</code>도 <code>.format(age + 1)</code>처럼 인자 자리에서는 계산할 수 있다. 하지만 중괄호 안에 식을 쓰는 건 f 문자열만 된다. <code>"{age + 1}".format(age=30)</code>은 <code>age + 1</code>이라는 이름의 값을 찾다가 <code>KeyError</code>를 낸다.</p>
+<pre class="code"><code>print("{age + 1}".format(age=30))   # KeyError: 'age + 1'</code></pre>
+</details>
+<details class="deep"><summary>f 문자열과 format은 왜 서식 문법이 같을까?</summary>
+<p><code>:</code> 뒤에 쓰는 서식은 포맷 명세 미니 언어라는 약속된 문법이다. 그래서 f 문자열과 <code>format</code>에서 똑같이 쓸 수 있다(<code>"{0:,}".format(1500000)</code>).</p>
+<p>참고: <a href="https://docs.python.org/3/library/string.html#format-specification-mini-language" target="_blank">Format Specification Mini-Language</a></p>
+</details>
+
+<h3>문자열 함수</h3>
+<p><code>"hi".upper()</code>처럼 값 뒤에 점을 찍어 부르는 함수를 <b>메서드</b>라고 한다.</p>
+<p><mark>문자열은 바꿀 수 없어서, 문자열 함수는 원본을 고치지 않고 새 문자열을 돌려준다.</mark> 결과를 계속 쓰려면 변수에 다시 넣어야 한다.</p>
+<pre class="code"><code>a = "hi"
+print(a.upper())   # HI
+print(a)           # hi  원본은 그대로다
+a = a.upper()
+print(a)           # HI</code></pre>
+<table><tr><th>함수</th><th>하는 일</th></tr>
+<tr><td><code>count(x)</code></td><td>x가 몇 번 나오는지 센다</td></tr>
+<tr><td><code>find(x)</code></td><td>x가 처음 나오는 위치. 없으면 <code>-1</code></td></tr>
+<tr><td><code>index(x)</code></td><td>x가 처음 나오는 위치. 없으면 에러</td></tr>
+<tr><td><code>join(목록)</code></td><td>목록의 글자들 사이사이에 끼워 하나로 합친다</td></tr>
+<tr><td><code>upper()</code>, <code>lower()</code></td><td>대문자로, 소문자로</td></tr>
+<tr><td><code>strip()</code>, <code>lstrip()</code>, <code>rstrip()</code></td><td>양쪽, 왼쪽, 오른쪽 공백 지우기</td></tr>
+<tr><td><code>replace(a, b)</code></td><td>a를 b로 바꾼다</td></tr>
+<tr><td><code>split(x)</code></td><td>x를 기준으로 나눠 리스트로. 비우면 공백 기준</td></tr>
+<tr><td><code>isalpha()</code>, <code>isdigit()</code></td><td>알파벳만인지, 숫자만인지</td></tr>
+<tr><td><code>startswith(x)</code>, <code>endswith(x)</code></td><td>x로 시작하는지, 끝나는지</td></tr></table>
+<pre class="code"><code>print("hobby".count("b"))                   # 2
+a = "Python is the best choice"
+print(a.find("b"))                          # 14
+print(a.find("k"))                          # -1
+print(",".join("abcd"))                     # a,b,c,d
+print(",".join(["a", "b", "c", "d"]))       # a,b,c,d
+print("HI".lower())                         # hi
+print(repr(" hi ".lstrip()))                # 'hi '
+print(repr(" hi ".rstrip()))                # ' hi'
+print(repr(" hi ".strip()))                 # 'hi'
+print("Life is too short".replace("Life", "Your leg"))   # Your leg is too short
+print("Life is too short".split())          # ['Life', 'is', 'too', 'short']
+print("a:b:c:d".split(":"))                 # ['a', 'b', 'c', 'd']
+print("Python".isalpha(), "Python3".isalpha(), "123".isdigit())   # True False True
+print("python.py".startswith("python"), "python.py".endswith(".py"))   # True True
+a.index("k")                                # ValueError: substring not found</code></pre>`
+    },
+    {
+      id: "2-4",
+      title: "2-4 리스트",
+      html: `
+<p><b>리스트</b>는 여러 값을 순서대로 담는 목록이다. 대괄호(<code>[]</code>)로 감싸고 값은 쉼표로 구분한다. 리스트에 담긴 값 하나하나를 <b>요소</b>라고 한다. 숫자, 문자열, 다른 리스트까지 어떤 값이든 섞어 담을 수 있다.</p>
+<pre class="code"><code>a = []                              # 빈 리스트. list()로도 만든다
+b = [1, 2, 3]                       # 숫자
+c = ['Life', 'is', 'too', 'short']  # 문자열
+d = [1, 2, 'Life', 'is']            # 섞어서
+e = [1, 2, ['Life', 'is']]          # 리스트 안에 리스트</code></pre>
+
+<h3>인덱싱과 슬라이싱</h3>
+<p>문자열과 똑같다. 리스트 안의 리스트는 <code>[]</code>를 이어 붙여 꺼낸다.</p>
+<pre class="code"><code>a = [1, 2, 3, ['a', 'b', 'c']]
+print(a[0])        # 1
+print(a[-1])       # ['a', 'b', 'c']
+print(a[0:2])      # [1, 2]
+print(a[3][1])     # b
+print(a[-1][:2])   # ['a', 'b']</code></pre>
+
+<h3>더하기, 곱하기, 길이</h3>
+<p>이것도 문자열과 같다.</p>
+<pre class="code"><code>a = [1, 2, 3]
+print(a + [4, 5, 6])   # [1, 2, 3, 4, 5, 6]
+print(a * 3)           # [1, 2, 3, 1, 2, 3, 1, 2, 3]
+print(len(a))          # 3</code></pre>
+<p>다만 <mark>종류가 다른 값끼리는 더할 수 없다.</mark> 리스트와 문자열, 그리고 리스트 안의 숫자와 문자열도 마찬가지다. <code>str()</code>로 문자열로 바꿔서 더한다.</p>
+<pre class="code"><code>a = [1, 2, 3]
+print(str(a[2]) + "hi")   # 3hi
+a[2] + "hi"               # TypeError: unsupported operand type(s) for +: 'int' and 'str'</code></pre>
+<details class="deep"><summary>문자열과 리스트는 어떻게 서로 바꿀까?</summary>
+<pre class="code"><code>print(list("abc"))                # ['a', 'b', 'c']  문자열 → 리스트 (한 글자씩)
+print("a b c".split())            # ['a', 'b', 'c']  문자열 → 리스트 (기준 문자로 나눠서)
+print("".join(['a', 'b', 'c']))   # abc              리스트 → 문자열 (이어 붙여서)</code></pre>
+<p>리스트를 <code>str()</code>에 넣으면 <code>'[1, 2, 3]'</code>처럼 대괄호까지 통째로 문자열이 된다. 요소만 이어 붙이려면 <code>join</code>을 쓴다. <code>join</code>은 문자열 요소만 받으므로 숫자 리스트는 <code>map(str, a)</code>로 각 요소를 문자열로 바꾼 뒤 합친다.</p>
+<pre class="code"><code>a = [1, 2, 3]
+print(str(a))                 # [1, 2, 3]
+print("".join(map(str, a)))   # 123</code></pre>
+</details>
+
+<h3>수정과 삭제</h3>
+<p><mark>문자열과 달리 리스트는 바꿀 수 있다.</mark> 이런 값을 <b>변경 가능(mutable)</b>하다고 한다. 지울 때는 <code>del</code>을 쓴다. 슬라이싱을 넣으면 범위째 지운다.</p>
+<pre class="code"><code>a = [1, 2, 3]
+a[2] = 4
+print(a)   # [1, 2, 4]
+del a[1]
+print(a)   # [1, 4]
+a = [1, 2, 3, 4, 5]
+del a[2:]
+print(a)   # [1, 2]</code></pre>
+<p><code>del</code>은 함수가 아니라 <code>def</code> 같은 예약어라서 괄호 없이 쓴다.</p>
+
+<h3>리스트 함수</h3>
+<p>문자열 함수와 반대로, 리스트 함수는 원본 리스트를 직접 바꾼다.</p>
+<table><tr><th>함수</th><th>하는 일</th></tr>
+<tr><td><code>append(x)</code></td><td>맨 뒤에 x를 <b>통째로</b> 하나 추가</td></tr>
+<tr><td><code>extend(목록)</code></td><td>목록을 <b>풀어서</b> 이어 붙이기. <code>a += 목록</code>과 같다</td></tr>
+<tr><td><code>insert(위치, x)</code></td><td>위치에 x를 끼워 넣기</td></tr>
+<tr><td><code>remove(x)</code></td><td>값이 x인 요소를 처음 하나만 지우기</td></tr>
+<tr><td><code>pop(위치)</code></td><td>위치의 요소를 꺼내면서 그 값을 돌려주기. 비우면 맨 뒤</td></tr>
+<tr><td><code>sort()</code></td><td>정렬</td></tr>
+<tr><td><code>reverse()</code></td><td>지금 순서를 거꾸로 (정렬은 하지 않는다)</td></tr>
+<tr><td><code>index(x)</code>, <code>count(x)</code></td><td>x의 위치(없으면 에러), x의 개수</td></tr></table>
+<pre class="code"><code>a = [1, 2, 3]
+a.append([4, 5])
+print(a)          # [1, 2, 3, [4, 5]]
+a = [1, 2, 3]
+a.extend([4, 5])
+print(a)          # [1, 2, 3, 4, 5]
+a.insert(0, 0)
+print(a)          # [0, 1, 2, 3, 4, 5]
+a.remove(3)
+print(a)          # [0, 1, 2, 4, 5]
+print(a.pop())    # 5
+print(a.pop(0))   # 0
+print(a)          # [1, 2, 4]
+a = [1, 4, 3, 2]
+a.sort()
+print(a)          # [1, 2, 3, 4]
+a.reverse()
+print(a)          # [4, 3, 2, 1]
+print(a.index(3), a.count(1))   # 1 1</code></pre>
+<details class="deep"><summary>b = a.sort()라고 쓰면 b에는 무엇이 들어갈까?</summary>
+<p><code>None</code>이 들어간다. 원본을 직접 바꾸는 리스트 함수 대부분은 아무것도 돌려주지 않는다(<code>None</code>). 원본은 그대로 두고 정렬된 새 리스트가 필요하면 <code>sorted(a)</code>를 쓴다.</p>
+<pre class="code"><code>a = [3, 1, 2]
+b = a.sort()
+print(b)            # None
+print(a)            # [1, 2, 3]
+print(sorted([3, 1, 2]))   # [1, 2, 3]</code></pre>
+</details>
+<details class="deep"><summary>결과가 같은데 extend와 +=는 왜 둘 다 있을까?</summary>
+<ul>
+  <li><code>+=</code> 같은 복합 대입은 파이썬 2.0에서 나중에 추가됐다. 이미 있던 <code>extend</code>를 없앨 이유가 없었다.</li>
+  <li><code>+=</code>는 대입문이라 식 자리에 쓸 수 없지만, <code>extend</code>는 메서드라 어디서든 부를 수 있다.</li>
+  <li><code>+=</code>는 "늘린 다음 다시 대입"한다. 이 차이는 2-5 튜플에서 드러난다.</li>
+</ul>
+</details>`
+    },
+    {
+      id: "2-5",
+      title: "2-5 튜플",
+      html: `
+<p><b>튜플</b>은 리스트와 거의 같지만 <mark>값을 바꿀 수 없다.</mark> 리스트는 <code>[]</code>, 튜플은 <code>()</code>로 감싼다. 값이 바뀌지 않아야 할 때 튜플을, 자주 바뀔 때 리스트를 쓴다.</p>
+<pre class="code"><code>t1 = ()
+t2 = (1,)            # 요소가 하나면 쉼표가 꼭 있어야 한다
+t3 = (1, 2, 3)
+t4 = 1, 2, 3         # 괄호를 생략해도 된다
+t5 = ('a', 'b', ('ab', 'cd'))</code></pre>
+<p>튜플을 만드는 건 사실 괄호가 아니라 <b>쉼표</b>다. 그래서 <code>(1)</code>은 그냥 괄호로 감싼 숫자 1이고, <code>(1,)</code>이어야 튜플이 된다.</p>
+<pre class="code"><code>print(type((1)))    # &lt;class 'int'&gt;
+print(type((1,)))   # &lt;class 'tuple'&gt;</code></pre>
+
+<h3>바꿀 수 없다</h3>
+<p>요소를 지우거나 바꾸면 에러가 난다. 그래서 <code>append</code>, <code>sort</code> 같은 함수가 없고, 값을 바꾸지 않는 <code>count</code>와 <code>index</code>만 있다.</p>
+<pre class="code"><code>t = (1, 2, 'a', 'b')
+t[0] = 'c'   # TypeError: 'tuple' object does not support item assignment</code></pre>
+<p>바꾸는 것만 빼면 리스트와 같다. 인덱싱, 슬라이싱, <code>+</code>, <code>*</code>, <code>len</code> 모두 된다. <code>+</code>와 <code>*</code>는 원래 튜플을 그대로 두고 새 튜플을 만든다.</p>
+<pre class="code"><code>t = (1, 2, 'a', 'b')
+print(t[0])         # 1
+print(t[1:])        # (2, 'a', 'b')
+print(t + (3, 4))   # (1, 2, 'a', 'b', 3, 4)
+print((3, 4) * 2)   # (3, 4, 3, 4)
+print(len(t))       # 4</code></pre>
+<p>단, <mark>튜플 안에 든 리스트는 리스트라서 바꿀 수 있다.</mark></p>
+<pre class="code"><code>t = ([1],)
+t[0].append(2)
+print(t)   # ([1, 2],)</code></pre>
+<details class="deep"><summary>튜플 안의 리스트에 +=를 쓰면 어떻게 될까?</summary>
+<p>에러가 나는데, 리스트는 이미 늘어나 있다. 2-4에서 본 것처럼 <code>+=</code>는 "늘린 다음 다시 대입"한다. 리스트를 늘리는 데는 성공하고, 튜플 자리에 다시 넣는 단계에서 실패한다. <code>extend</code>는 대입이 없어서 깔끔하다.</p>
+<pre class="code"><code>t = ([1],)
+try:
+    t[0] += [2]
+except TypeError as e:
+    print(e)    # 'tuple' object does not support item assignment
+print(t)        # ([1, 2],)
+t[0].extend([3])
+print(t)        # ([1, 2, 3],)</code></pre>
+</details>
+<details class="deep"><summary>리스트가 있는데 튜플은 왜 따로 있을까?</summary>
+<p>공식 FAQ는 리스트와 튜플이 비슷해 보여도 쓰임새가 다르다고 설명한다.</p>
+<ul>
+  <li><b>리스트</b>는 다른 언어의 배열에 가깝다. 같은 종류의 값을 개수 제한 없이 담고 하나씩 처리한다. 예: 폴더 안의 파일 이름 목록.</li>
+  <li><b>튜플</b>은 C의 구조체(<code>struct</code>)에 가깝다. 서로 관련된 몇 개의 값을 한 덩어리로 묶는다. 예: 좌표 <code>(x, y)</code>.</li>
+</ul>
+<p>튜플은 이미 여러 곳에서 쓰이고 있었다.</p>
+<ul>
+  <li>포매팅의 <code>"%d %s" % (10, "three")</code>에서 값을 묶은 괄호가 튜플이다.</li>
+  <li>함수가 <code>return 1, 2</code>처럼 값을 여러 개 돌려주면 튜플로 묶여서 나온다.</li>
+  <li><code>a, b = b, a</code>로 두 변수를 맞바꾸는 것도 튜플로 묶었다가 푸는 모양이다(2-9).</li>
+  <li>바꿀 수 없어서 딕셔너리의 Key로 쓸 수 있다(2-6).</li>
+</ul>
+<p>참고: <a href="https://docs.python.org/3/faq/design.html#why-are-there-separate-tuple-and-list-data-types" target="_blank">Python FAQ</a></p>
+</details>`
+    },
+    {
+      id: "2-6",
+      title: "2-6 딕셔너리",
+      html: `
+<p><b>딕셔너리</b>는 이름표(Key)와 값(Value)을 한 쌍으로 묶어 담는다. 사전에서 단어로 뜻을 찾듯, Key로 Value를 찾는다. 중괄호로 감싸고 <code>Key: Value</code>를 쉼표로 구분한다.</p>
+<pre class="code"><code>dic = {'name': 'pey', 'phone': '010-9999-1234', 'birth': '1118'}
+print(dic['name'])   # pey</code></pre>
+<p>대괄호 안에 들어가는 건 리스트처럼 위치가 아니라 <b>Key</b>다. 파이썬 3.7부터는 넣은 순서도 유지된다.</p>
+
+<h3>추가, 수정, 삭제</h3>
+<p>없는 Key에 넣으면 추가되고, 있는 Key에 넣으면 값이 바뀐다. 지울 때는 <code>del</code>을 쓴다.</p>
+<pre class="code"><code>a = {1: 'a'}
+a[2] = 'b'      # 없는 Key → 추가
+print(a)        # {1: 'a', 2: 'b'}
+a[1] = 'c'      # 있는 Key → 수정
+print(a)        # {1: 'c', 2: 'b'}
+del a[2]        # 삭제
+print(a)        # {1: 'c'}</code></pre>
+
+<h3>주의할 점</h3>
+<p><mark>Key가 겹치면 뒤에 쓴 것만 남는다.</mark> 같은 Key가 둘이면 어느 값을 줄지 정할 수 없기 때문이다.</p>
+<pre class="code"><code>print({1: 'a', 1: 'b'})   # {1: 'b'}</code></pre>
+<p>Key에는 <b>바뀌지 않는 값</b>만 쓸 수 있다. 숫자, 문자열, 튜플은 되고 리스트는 안 된다. 에러 메시지의 unhashable은 "바뀔 수 있는 값이라 Key로 쓸 수 없다"는 뜻이다. Value에는 아무 값이나 넣을 수 있다.</p>
+<pre class="code"><code>print({(37.5, 127.0): "서울"})   # {(37.5, 127.0): '서울'}
+{[37.5, 127.0]: "서울"}          # TypeError: cannot use 'list' as a dict key (unhashable type: 'list')</code></pre>
+
+<h3>딕셔너리 함수</h3>
+<table><tr><th>함수</th><th>하는 일</th></tr>
+<tr><td><code>keys()</code>, <code>values()</code>, <code>items()</code></td><td>Key만, Value만, (Key, Value) 쌍을 모아 돌려준다</td></tr>
+<tr><td><code>get(Key, 기본값)</code></td><td>Key로 Value를 꺼낸다. 없으면 에러 대신 <code>None</code> 또는 기본값</td></tr>
+<tr><td><code>Key in 딕셔너리</code></td><td>Key가 있는지 확인. <b>Value는 보지 않는다</b></td></tr>
+<tr><td><code>pop(Key, 기본값)</code></td><td>쌍을 지우면서 Value를 돌려준다</td></tr>
+<tr><td><code>clear()</code></td><td>전부 지운다</td></tr></table>
+<pre class="code"><code>a = {'name': 'pey', 'phone': '010-9999-1234', 'birth': '1118'}
+print(list(a.keys()))     # ['name', 'phone', 'birth']
+print(list(a.values()))   # ['pey', '010-9999-1234', '1118']
+for k, v in a.items():    # Key와 Value를 한 번에 풀어 받기
+    print(k, v)
+print(a.get('name'))           # pey
+print(a.get('nokey'))          # None
+print(a.get('nokey', '정보없음'))   # 정보없음
+print('name' in a)             # True
+print('pey' in a)              # False
+print(a.pop('name'))           # pey
+print(a.pop('email', '정보없음'))   # 정보없음
+a.clear()
+print(a)                       # {}
+a['nokey']                     # KeyError: 'nokey'</code></pre>
+<p>딕셔너리를 그냥 <code>for</code>로 돌리면 Key가 하나씩 나온다.</p>
+<details class="deep"><summary>keys()가 돌려주는 dict_keys는 리스트일까?</summary>
+<p>아니다. 딕셔너리의 Key를 복사한 게 아니라 원래 딕셔너리를 그대로 비춰 보는 <b>뷰(view) 객체</b>다. 그래서 딕셔너리가 바뀌면 뷰도 따라 바뀐다.</p>
+<pre class="code"><code>d = {'name': 'pey', 'phone': '010'}
+k = d.keys()
+d['birth'] = '1118'
+print(k)   # dict_keys(['name', 'phone', 'birth'])  다시 부르지 않아도 바뀌어 있다</code></pre>
+<p>순회, <code>len</code>, <code>in</code>은 되지만 인덱싱은 안 된다. 리스트가 필요하면 <code>list()</code>로 바꾼다. 이때는 그 순간의 복사본이라 더는 따라 바뀌지 않는다. 복사하지 않으니 딕셔너리가 커도 가볍다. <code>dict_values</code>, <code>dict_items</code>도 원리가 같다. 집합처럼 교집합(<code>&amp;</code>) 같은 연산도 된다.</p>
+<pre class="code"><code>d = {'name': 'pey', 'phone': '010'}
+print(d.keys() &amp; {'name', 'x'})   # {'name'}
+d.keys()[0]                       # TypeError: 'dict_keys' object is not subscriptable</code></pre>
+</details>
+<details class="deep"><summary>대화형 모드에서 a.get('nokey')를 입력하면 왜 아무것도 안 보일까?</summary>
+<p><code>None</code>을 돌려주는데, 대화형 모드는 값이 <code>None</code>이면 출력하지 않기 때문이다(1장의 <code>sys.displayhook</code>). 파일로 실행할 때는 <code>print</code>로 찍으면 <code>None</code>이 보인다.</p>
+</details>`
+    },
+    {
+      id: "2-7",
+      title: "2-7 집합",
+      html: `
+<p><b>집합(set)</b>은 수학의 집합처럼 값을 모아 둔다. <code>set()</code> 안에 리스트나 문자열을 넣거나, 중괄호로 바로 만든다.</p>
+<pre class="code"><code>print(set([1, 2, 3]))   # {1, 2, 3}
+print(set("Hello"))     # {'e', 'H', 'l', 'o'}  순서는 실행할 때마다 다를 수 있다
+print({1, 2, 3})        # {1, 2, 3}</code></pre>
+<p><mark>빈 집합은 <code>{}</code>로 만들 수 없다.</mark> <code>{}</code>는 빈 딕셔너리다. 빈 집합은 <code>set()</code>이다.</p>
+<pre class="code"><code>print(type({}))      # &lt;class 'dict'&gt;
+print(type(set()))   # &lt;class 'set'&gt;</code></pre>
+
+<h3>집합의 특징</h3>
+<ul>
+  <li><b>중복이 없다.</b> <code>set("Hello")</code>에서 <code>l</code>이 하나뿐인 이유다.</li>
+  <li><b>순서가 없다.</b> 그래서 인덱싱이 안 된다. 값을 꺼내려면 리스트나 튜플로 바꾼다.</li>
+</ul>
+<pre class="code"><code>s = {1, 2, 3}
+print(list(s)[0])   # 1
+s[0]                # TypeError: 'set' object is not subscriptable</code></pre>
+<p>중복이 없다는 성질 때문에 리스트의 중복을 없앨 때 많이 쓴다. 대신 원래 순서가 유지된다고 장담할 수 없다.</p>
+<pre class="code"><code>a = [1, 2, 2, 3, 3, 3]
+print(list(set(a)))   # [1, 2, 3]</code></pre>
+<details class="deep"><summary>순서를 지키면서 중복을 없애려면?</summary>
+<p><code>dict.fromkeys</code>를 쓴다. 리스트의 값들을 Key로 삼아 딕셔너리를 만드는데, Key는 중복될 수 없고 3.7부터 딕셔너리는 넣은 순서를 기억한다. 이 두 성질을 이용한 방법이다.</p>
+<pre class="code"><code>a = [3, 1, 3, 2, 1]
+print(list(dict.fromkeys(a)))   # [3, 1, 2]</code></pre>
+<p><code>fromkeys</code>는 Key 목록을 받아 딕셔너리를 새로 만드는 함수다. 두 번째 인자는 모든 Key에 똑같이 넣을 Value이고, 생략하면 <code>None</code>이다. 이미 만든 딕셔너리에 대고 부르는 <code>a.get()</code>과 달리, 딕셔너리를 새로 만드는 함수라 자료형 이름 <code>dict</code>에 대고 부른다. 이런 함수를 클래스 메서드라고 한다.</p>
+<pre class="code"><code>print(dict.fromkeys(['a', 'b', 'c']))   # {'a': None, 'b': None, 'c': None}
+print(dict.fromkeys(['a', 'b'], 0))     # {'a': 0, 'b': 0}</code></pre>
+<p>두 번째 인자로 리스트처럼 바뀌는 값을 주면 모든 Key가 같은 리스트 하나를 나눠 가진다(2-9의 <code>b = a</code>와 같은 이유).</p>
+<pre class="code"><code>d = dict.fromkeys(['a', 'b'], [])
+d['a'].append(1)
+print(d)   # {'a': [1], 'b': [1]}</code></pre>
+</details>
+
+<h3>교집합, 합집합, 차집합</h3>
+<pre class="code"><code>s1 = {1, 2, 3, 4, 5, 6}
+s2 = {4, 5, 6, 7, 8, 9}
+print(s1 &amp; s2)   # {4, 5, 6}
+print(s1 | s2)   # {1, 2, 3, 4, 5, 6, 7, 8, 9}
+print(s1 - s2)   # {1, 2, 3}
+print(s2 - s1)   # {7, 8, 9}  순서는 다를 수 있다</code></pre>
+<table><tr><th>연산</th><th>연산자</th><th>함수</th><th>결과</th></tr>
+<tr><td>교집합</td><td><code>s1 &amp; s2</code></td><td><code>s1.intersection(s2)</code></td><td><code>{4, 5, 6}</code></td></tr>
+<tr><td>합집합</td><td><code>s1 | s2</code></td><td><code>s1.union(s2)</code></td><td><code>{1, 2, …, 9}</code></td></tr>
+<tr><td>차집합</td><td><code>s1 - s2</code></td><td><code>s1.difference(s2)</code></td><td><code>{1, 2, 3}</code></td></tr></table>
+<p>차집합은 순서에 따라 결과가 다르다.</p>
+<details class="deep"><summary>한쪽에만 있는 값만 모으려면?</summary>
+<p>대칭차집합 <code>s1 ^ s2</code>(<code>symmetric_difference</code>)를 쓴다. 위의 예에서 결과는 <code>{1, 2, 3, 7, 8, 9}</code>다.</p>
+</details>
+
+<h3>집합 함수</h3>
+<p><code>add</code>는 값 하나를 <b>통째로</b> 넣고, <code>update</code>는 여러 값을 <b>풀어서</b> 하나씩 넣는다. 리스트의 <code>append</code>와 <code>extend</code> 관계와 같다.</p>
+<pre class="code"><code>s = {1}
+s.add("abc")
+print(len(s))      # 2   {1, 'abc'}
+s = {1}
+s.update("abc")    # 문자열을 한 글자씩 풀어서 넣는다
+print(len(s))      # 4   {1, 'a', 'b', 'c'}</code></pre>
+<p>지울 때는 <code>remove</code>나 <code>discard</code>를 쓴다. 없는 값을 지우려 하면 <code>remove</code>는 에러를 내고 <code>discard</code>는 조용히 넘어간다. <code>clear</code>는 전부 지운다. 빈 집합은 <code>{}</code>가 아니라 <code>set()</code>으로 표시된다.</p>
+<pre class="code"><code>s = {1, 2, 3}
+s.remove(2)
+print(s)       # {1, 3}
+s.discard(99)  # 아무 일도 없다
+s.clear()
+print(s)       # set()
+s.remove(99)   # KeyError: 99</code></pre>
+<details class="deep"><summary>add로 리스트를 넣을 수 있을까?</summary>
+<p>없다. 집합에 넣는 값도 딕셔너리 Key처럼 바뀌지 않는 값이어야 하기 때문이다(2-6). 튜플은 된다.</p>
+<pre class="code"><code>s = {1}
+s.add((2, 3))
+print(len(s))   # 2
+s.add([2, 3])   # TypeError: cannot use 'list' as a set element (unhashable type: 'list')</code></pre>
+</details>`
+    },
+    {
+      id: "2-8",
+      title: "2-8 불",
+      html: `
+<p><b>불(bool)</b>은 참(<code>True</code>)과 거짓(<code>False</code>) 두 값만 있는 자료형이다. 첫 글자는 대문자로 쓰고, 따옴표로 감싸지 않는다. <code>"True"</code>는 문자열이다. <code>==</code>, <code>&lt;</code> 같은 비교의 결과가 불 값이다.</p>
+<pre class="code"><code>a = True
+print(type(a))   # &lt;class 'bool'&gt;
+print(1 == 1)    # True
+print(2 &lt; 1)     # False</code></pre>
+
+<h3>자료형의 참과 거짓</h3>
+<p>불이 아닌 값도 조건문에 넣으면 참이나 거짓으로 취급된다. 규칙은 하나다. <mark>비어 있거나 0이면 거짓, 그 외에는 참이다.</mark></p>
+<table><tr><th>값</th><th>참/거짓</th></tr>
+<tr><td><code>"python"</code>, <code>[1, 2, 3]</code>, <code>(1, 2, 3)</code>, <code>{'a': 1}</code>, <code>{1}</code>, <code>1</code></td><td>참</td></tr>
+<tr><td><code>""</code>, <code>[]</code>, <code>()</code>, <code>{}</code>, <code>set()</code>, <code>0</code>, <code>0.0</code>, <code>None</code></td><td>거짓</td></tr></table>
+<p>그래서 조건에 값을 바로 넣을 수 있다. 어떤 값이 참인지는 <code>bool()</code>로 확인한다.</p>
+<pre class="code"><code>a = [1, 2, 3, 4]
+while a:            # a가 비어 있지 않은 동안
+    print(a.pop())
+print(bool("python"))   # True
+print(bool(""))         # False
+print(bool([]))         # False</code></pre>
+<details class="deep"><summary>JavaScript의 truthy, falsy와 같을까?</summary>
+<p>같은 개념이다. 파이썬 공식 문서는 Truth Value Testing이라고 부른다. 규칙도 거의 같지만 빈 컬렉션이 다르다. JavaScript에서는 빈 배열 <code>[]</code>, 빈 객체 <code>{}</code>, 빈 Set이 참이지만, 파이썬에서는 모두 거짓이다. 그래서 파이썬은 길이를 따로 보지 않고 <code>if not a:</code>만으로 빈 리스트를 확인할 수 있다.</p>
+<p>참고: <a href="https://docs.python.org/3/library/stdtypes.html#truth-value-testing" target="_blank">Truth Value Testing</a></p>
+</details>
+
+<h3>논리 연산자</h3>
+<pre class="code"><code>print(True and False)   # False  둘 다 참이어야 참
+print(True or False)    # True   하나만 참이어도 참
+print(not True)         # False  반대로</code></pre>
+<details class="deep"><summary>and와 or는 꼭 True나 False를 돌려줄까?</summary>
+<p>아니다. 양쪽에 놓인 값 자체를 돌려준다. <code>or</code>는 앞이 참이면 앞의 값을, 거짓이면 뒤의 값을 돌려준다. <code>and</code>는 앞이 거짓이면 앞의 값을, 참이면 뒤의 값을 돌려준다. 그래서 <code>name = input_name or "익명"</code>처럼 값이 비어 있을 때 기본값을 줄 때 많이 쓴다.</p>
+<pre class="code"><code>print("" or "default")   # default
+print(3 and 5)           # 5
+print(0 and 5)           # 0</code></pre>
+</details>
+<details class="deep"><summary>True + True는 왜 2일까?</summary>
+<p><code>True</code>와 <code>False</code>는 사실 숫자 1과 0이다. 불 자료형이 정수의 한 종류이기 때문이다.</p>
+<pre class="code"><code>print(True + True)   # 2
+print(True == 1)     # True</code></pre>
+</details>`
+    },
+    {
+      id: "2-9",
+      title: "2-9 변수",
+      html: `
+<p><b>변수</b>는 값에 붙이는 이름이다. <code>이름 = 값</code>으로 만들고, 이걸 <b>대입</b>이라고 한다. Java나 C와 달리 값의 종류를 따로 적지 않는다.</p>
+<pre class="code"><code>a = 1
+b = "python"
+c = [1, 2, 3]</code></pre>
+
+<h3>이름 짓는 규칙</h3>
+<ul>
+  <li>문자, 숫자, 밑줄(<code>_</code>)만 쓸 수 있다.</li>
+  <li>숫자로 시작할 수 없다.</li>
+  <li>예약어(<code>def</code>, <code>if</code> 등)는 쓸 수 없다.</li>
+  <li>대소문자를 구분한다. <code>A</code>와 <code>a</code>는 다른 변수다.</li>
+</ul>
+<pre class="code"><code>1abc = 1   # SyntaxError: invalid decimal literal</code></pre>
+<p>꼭 지켜야 하는 건 아니지만, 파이썬은 소문자로 쓰고 단어 사이를 밑줄로 잇는 <b>snake_case</b>를 권장한다.</p>
+<pre class="code"><code>user_name = "pey"   # 파이썬 스타일
+userName = "pey"    # camelCase. 동작은 하지만 파이썬답지 않다</code></pre>
+<details class="deep"><summary>JavaScript는 camelCase인데 파이썬은 왜 snake_case일까?</summary>
+<p>문법이 강제하는 게 아니라 파이썬 공식 스타일 가이드인 PEP 8이 그렇게 정했기 때문이다. 표준 라이브러리부터 이 규칙을 따르므로 대부분의 파이썬 코드가 같은 모양이다. 클래스 이름은 <code>PascalCase</code>로 쓴다(<code>class UserName:</code>).</p>
+<p>참고: <a href="https://peps.python.org/pep-0008/#function-and-variable-names" target="_blank">PEP 8</a></p>
+</details>
+
+<h3>변수는 값을 가리키는 이름이다</h3>
+<p><code>a = [1, 2, 3]</code>은 <code>a</code>라는 상자에 리스트를 넣는 게 아니다. 리스트가 만들어지고, <code>a</code>는 그 리스트를 <b>가리키는 이름</b>이 된다.</p>
+<p>무엇을 가리키는지는 <code>id</code> 함수로 확인한다. <code>id</code>는 값마다 붙은 고유 번호(보통 쓰는 CPython에서는 메모리 주소)를 돌려준다. 같은 대상을 가리키면 <code>id</code>가 같고, 생긴 게 같아도 따로 만든 값이면 다르다.</p>
+<pre class="code"><code>a = [1, 2, 3]
+b = a              # a가 가리키는 리스트를 b도 가리킨다
+c = [1, 2, 3]      # 생긴 건 같지만 새로 만든 리스트
+print(id(a) == id(b))   # True
+print(id(a) == id(c))   # False</code></pre>
+<p><code>id</code>를 직접 비교하는 대신 <code>is</code>를 쓴다. <mark><code>==</code>는 값이 같은지, <code>is</code>는 같은 대상인지를 본다.</mark></p>
+<pre class="code"><code>a = [1, 2, 3]
+b = a
+c = [1, 2, 3]
+print(a is b)   # True
+print(a == c)   # True   값은 같다
+print(a is c)   # False  같은 대상은 아니다</code></pre>
+
+<h3>b = a는 복사가 아니다</h3>
+<p><code>b = a</code>는 리스트 하나를 <code>a</code>와 <code>b</code> 두 이름이 함께 가리키게 할 뿐이다. 그래서 <mark><code>a</code>로 바꾸면 <code>b</code>로 봐도 바뀌어 있다.</mark></p>
+<div class="viz"><svg width="360" height="110" viewBox="0 0 360 110">
+  <rect x="8" y="10" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="30" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">a</text>
+  <rect x="8" y="70" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="90" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">b</text>
+  <path d="M62 25 C 120 25, 120 55, 170 55" fill="none" stroke="#171717" stroke-width="1.3"/>
+  <path d="M62 85 C 120 85, 120 55, 170 55" fill="none" stroke="#171717" stroke-width="1.3"/>
+  <rect x="176" y="36" width="172" height="38" rx="8" fill="#fff" stroke="#171717" stroke-width="1.3"/>
+  <text x="262" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="15">[1, 4, 3]</text>
+</svg></div>
+<pre class="code"><code>a = [1, 2, 3]
+b = a
+a[1] = 4
+print(b)        # [1, 4, 3]
+print(a is b)   # True</code></pre>
+<p>따로 쓰려면 진짜로 복사해서 새 리스트를 만든다. 방법은 세 가지다.</p>
+<pre class="code"><code>from copy import copy
+a = [1, 2, 3]
+b = a[:]       # 1. 슬라이싱으로 전체를 잘라 새 리스트를 만든다
+b = copy(a)    # 2. copy 모듈
+b = a.copy()   # 3. 리스트의 copy 함수
+a[1] = 4
+print(b)        # [1, 2, 3]
+print(a is b)   # False</code></pre>
+<p><code>a = b = 'python'</code>처럼 한 값을 여러 변수에 넣을 때도 두 이름이 같은 대상을 가리킨다. 문자열은 바꿀 수 없어서 문제가 없지만, <code>a = b = []</code>처럼 리스트를 넣으면 <code>b = a</code>와 같은 상황이 된다.</p>
+<details class="deep"><summary>a += [4]와 a = a + [4]는 같을까?</summary>
+<p><code>b = a</code>로 같은 리스트를 가리키고 있을 때 차이가 난다. <code>+=</code>는 원래 리스트를 늘리지만, <code>a = a + [4]</code>는 새 리스트를 만들어 <code>a</code>에 다시 붙인다. 그래서 <code>+=</code> 뒤에는 <code>b</code>도 바뀌지만, <code>a = a + [4]</code> 뒤에는 <code>b</code>가 그대로다.</p>
+<pre class="code"><code>a = [1, 2, 3]
+b = a
+a += [4]
+print(b)   # [1, 2, 3, 4]
+a = [1, 2, 3]
+b = a
+a = a + [4]
+print(b)   # [1, 2, 3]</code></pre>
+</details>
+<details class="deep"><summary>a[:]는 안쪽 리스트까지 복사할까?</summary>
+<p>위의 세 방법은 <b>얕은 복사</b>다. 리스트 바깥만 새로 만들고, 안에 든 리스트는 여전히 같은 것을 가리킨다. 안쪽까지 전부 새로 만들려면 <code>copy.deepcopy</code>를 쓴다.</p>
+<pre class="code"><code>from copy import deepcopy
+c = [[1], [2]]
+d = c[:]
+d[0].append(9)
+print(c)   # [[1, 9], [2]]  c도 바뀐다
+c = [[1], [2]]
+d = deepcopy(c)
+d[0].append(9)
+print(c)   # [[1], [2]]</code></pre>
+</details>
+
+<h3>여러 변수에 한 번에 넣기</h3>
+<p>오른쪽 값을 하나씩 풀어서 왼쪽 변수에 차례로 넣는다. 셋 다 같은 뜻이다.</p>
+<pre class="code"><code>a, b = ('python', 'life')
+(a, b) = 'python', 'life'
+[a, b] = ['python', 'life']
+print(a, b)   # python life</code></pre>
+<p>이걸로 임시 변수 없이 두 값을 맞바꿀 수 있다.</p>
+<pre class="code"><code>a = 3
+b = 5
+a, b = b, a
+print(a, b)   # 5 3</code></pre>
+<details class="deep"><summary>값을 풀어 넣는 규칙은 정확히 뭘까?</summary>
+<p>이걸 <b>언패킹(unpacking)</b>이라고 한다.</p>
+<ul>
+  <li>오른쪽의 괄호는 생략해도 된다. 튜플은 괄호가 아니라 쉼표로 만들기 때문에 <code>'python', 'life'</code>도 튜플이다.</li>
+  <li>왼쪽의 <code>()</code>, <code>[]</code>도 생략해도 된다. 어떻게 써도 "변수 두 개에 차례로 넣는다"는 뜻이 같다.</li>
+  <li>오른쪽은 튜플이 아니어도 된다. 리스트, 문자열처럼 하나씩 꺼낼 수 있는 값이면 된다. 개수만 맞으면 된다.</li>
+</ul>
+<pre class="code"><code>a, b = 'hi'
+print(a, b)     # h i
+a, b = 1, 2, 3  # ValueError: too many values to unpack (expected 2, got 3)</code></pre>
+</details>
+<details class="deep"><summary>a, b = b, a는 어떻게 값을 잃지 않을까?</summary>
+<p>대입문은 오른쪽을 먼저 계산하기 때문이다.</p>
+<ol>
+  <li>오른쪽 <code>b, a</code>의 값 <code>5</code>와 <code>3</code>을 먼저 다 꺼내 둔다.</li>
+  <li>꺼내 둔 값을 왼쪽 <code>a</code>, <code>b</code>에 차례로 넣는다.</li>
+</ol>
+<p>넣기 전에 오른쪽 값을 이미 꺼내 두었으니 <code>a</code>가 먼저 바뀌어도 <code>b</code>에 넣을 값은 사라지지 않는다. 문법상으로 오른쪽 <code>b, a</code>는 튜플이지만, 실제로 실행할 때는 튜플을 만들지 않는다.</p>
+<p><code>dis</code> 모듈로 파이썬이 실제로 실행하는 명령(바이트코드)을 열어 보면 차이가 보인다. 아래는 Python 3.14 기준이고, 바이트코드는 버전마다 다르다. 이 문제집의 실행기는 버전이 달라서 조금 다르게 보일 수 있다.</p>
+<pre class="code"><code>import dis
+dis.dis("a, b = ('python', 'life')")</code></pre>
+<p><code>a, b = ('python', 'life')</code>와 <code>(a, b) = 'python', 'life'</code>는 명령이 완전히 같다. 괄호는 컴파일하면 사라지고, 튜플을 만들지 않고 값 두 개를 꺼내 순서만 맞춰 바로 넣는다.</p>
+<pre class="code norun"><code>LOAD_CONST  'python'
+LOAD_CONST  'life'
+SWAP        2
+STORE_NAME  a
+STORE_NAME  b</code></pre>
+<p><code>[a, b] = ['python', 'life']</code>는 리스트를 실제로 만든 다음(<code>BUILD_LIST</code>) 다시 푼다(<code>UNPACK_SEQUENCE</code>). 결과는 같지만 한 단계를 더 거친다.</p>
+<pre class="code norun"><code>LOAD_CONST       'python'
+LOAD_CONST       'life'
+BUILD_LIST       2
+UNPACK_SEQUENCE  2
+STORE_NAME       a
+STORE_NAME       b</code></pre>
+<p><code>a, b = b, a</code>도 튜플 없이 <code>b</code>와 <code>a</code>의 값을 꺼내 두고(<code>LOAD_NAME</code>) 순서를 바꿔(<code>SWAP</code>) 넣는다.</p>
+<p>참고: <a href="https://docs.python.org/3/reference/expressions.html#evaluation-order" target="_blank">Evaluation order</a></p>
+</details>`
+    }
+  ],
+
+  // answer 는 0부터 센다 (첫 보기 = 0). more 는 해설 끝 질문형 펼침(선택).
+  questions: [
+    // 1 (1)
+    { unit: "1", question: "이 코드를 파일로 저장해 실행하면 화면에 무엇이 보일까?",
+      code: "1 + 1\nprint(2 * 3)",
+      options: ["2 와 6", "6", "아무것도 안 보인다"], answer: 1,
+      explain: "파일로 실행하면 <code>print</code>로 출력한 것만 보인다. <code>1 + 1</code>은 계산만 하고 버려진다. 대화형 모드였다면 2도 보였을 것이다." },
+
+    // 2-1 (3)
+    { unit: "2-1", question: "실행하면 무엇이 출력될까?", code: "print(7 / 2)",
+      options: ["3", "3.0", "3.5"], answer: 2,
+      explain: "<code>/</code>는 항상 실수를 돌려준다." },
+    { unit: "2-1", question: "실행하면 무엇이 출력될까?", code: "print(10 // 4, 10 % 4)",
+      options: ["2 2", "2.5 2", "3 2"], answer: 0,
+      explain: "<code>//</code>는 몫 2, <code>%</code>는 나머지 2다." },
+    { unit: "2-1", question: "실행하면 무엇이 출력될까?", code: "print(-7 // 2)",
+      options: ["-3", "-3.5", "-4"], answer: 2,
+      explain: "<code>//</code>는 내림이다. -3.5보다 작거나 같은 가장 큰 정수는 -4다.",
+      more: { q: "7.0 // 2는?", a: "<code>3.0</code>이다. 실수가 끼면 결과도 실수가 된다." } },
+
+    // 2-2 (3)
+    { unit: "2-2", question: "실행하면 무엇이 출력될까?", code: "print(\"ab\" * 3)",
+      options: ["ababab", "ab3", "오류"], answer: 0,
+      explain: "문자열에 정수를 곱하면 그만큼 반복한다." },
+    { unit: "2-2", question: "실행하면 무엇이 출력될까?", code: "s = \"python\"\nprint(s[1:4])",
+      options: ["pyt", "yth", "ytho"], answer: 1,
+      explain: "인덱스 1부터 3까지다. 끝 번호 4는 포함하지 않는다." },
+    { unit: "2-2", question: "실행하면 무엇이 출력될까?", code: "s = \"Pithon\"\ns[1] = \"y\"\nprint(s)",
+      options: ["오류", "Python", "Pithon"], answer: 0,
+      explain: "문자열은 바꿀 수 없어서 한 글자 대입에서 <code>TypeError</code>가 난다.",
+      more: { q: "그럼 어떻게 고칠까?", a: "새 문자열을 만들어 다시 대입한다. <code>s = s[:1] + \"y\" + s[2:]</code>" } },
+
+    // 2-3 (4)
+    { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "age = 30\nprint(f\"{age + 1}살\")",
+      options: ["{age + 1}살", "301살", "31살"], answer: 2,
+      explain: "f 문자열의 중괄호 안에는 식을 넣을 수 있다. 계산한 결과가 들어간다." },
+    { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "a = \"hi\"\na.upper()\nprint(a)",
+      options: ["HI", "hi", "None"], answer: 1,
+      explain: "문자열 함수는 새 문자열을 돌려줄 뿐 원본을 바꾸지 않는다. 결과를 다시 대입하지 않았으니 그대로다." },
+    { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "print(\"Error is %d%%.\" % 98)",
+      options: ["Error is 98%.", "Error is 98%%.", "오류"], answer: 0,
+      explain: "<code>%</code> 방식 문자열 안에서 <code>%%</code>는 <code>%</code> 문자 하나가 된다." },
+    { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "print(\"{0:=^6}\".format(\"hi\"))",
+      options: ["hi====", "====hi", "==hi=="], answer: 2,
+      explain: "<code>^</code>는 가운데 정렬, 앞의 <code>=</code>는 채울 문자, 6은 전체 길이다." },
+
+    // 2-4 (5)
+    { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3, ['a', 'b', 'c']]\nprint(a[3][1])",
+      options: ["['a', 'b', 'c']", "b", "a"], answer: 1,
+      explain: "<code>a[3]</code>은 안쪽 리스트이고, 거기서 다시 <code>[1]</code>을 꺼낸다." },
+    { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nprint(a + [4])",
+      options: ["[1, 2, 3, [4]]", "[1, 2, 3, 4]", "오류"], answer: 1,
+      explain: "리스트끼리 더하면 이어 붙인 새 리스트가 된다." },
+    { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\na.append([4, 5])\nprint(len(a))",
+      options: ["5", "3", "4"], answer: 2,
+      explain: "<code>append</code>는 받은 값을 통째로 하나 넣는다. <code>[4, 5]</code>가 요소 하나가 되어 길이는 4다.",
+      more: { q: "길이를 5로 만들려면?", a: "<code>a.extend([4, 5])</code>나 <code>a += [4, 5]</code>처럼 풀어서 이어 붙인다." } },
+    { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nprint(a[2] + \"hi\")",
+      options: ["오류", "3hi", "[1, 2, 3hi]"], answer: 0,
+      explain: "<code>a[2]</code>는 정수 3이다. 정수와 문자열은 더할 수 없어서 <code>TypeError</code>가 난다. <code>str(a[2])</code>로 바꿔야 한다." },
+    { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [3, 1, 2]\nb = a.sort()\nprint(b)",
+      options: ["[1, 2, 3]", "[3, 1, 2]", "None"], answer: 2,
+      explain: "<code>sort</code>는 원본 <code>a</code>를 정렬하고 아무것도 돌려주지 않는다(<code>None</code>).",
+      more: { q: "정렬된 새 리스트를 b에 받으려면?", a: "<code>b = sorted(a)</code>를 쓴다. 원본은 그대로 두고 정렬된 새 리스트를 돌려준다." } },
+
+    // 2-5 (2)
+    { unit: "2-5", question: "실행하면 무엇이 출력될까?", code: "print(type((1)))",
+      options: ["<class 'int'>", "<class 'tuple'>", "오류"], answer: 0,
+      explain: "튜플을 만드는 건 쉼표다. <code>(1)</code>은 괄호로 감싼 숫자 1이고, 튜플은 <code>(1,)</code>이다." },
+    { unit: "2-5", question: "실행하면 무엇이 출력될까?", code: "t = ([1],)\nt[0].append(2)\nprint(t)",
+      options: ["오류", "([1, 2],)", "([1],)"], answer: 1,
+      explain: "튜플은 바꿀 수 없지만, 안에 든 리스트는 리스트라서 바꿀 수 있다.",
+      more: { q: "t[0] += [2]라고 쓰면?", a: "<code>TypeError</code>가 난다. 그런데 리스트는 이미 늘어나서 <code>t</code>는 <code>([1, 2],)</code>가 된다. <code>+=</code>는 늘린 다음 튜플 자리에 다시 대입하려 하기 때문이다." } },
+
+    // 2-6 (3)
+    { unit: "2-6", question: "실행하면 무엇이 출력될까?", code: "d = {1: 'a', 1: 'b'}\nprint(d)",
+      options: ["{1: 'b'}", "{1: 'a'}", "{1: 'a', 1: 'b'}"], answer: 0,
+      explain: "Key가 겹치면 하나만 남고, 뒤에 쓴 값이 앞의 값을 덮어쓴다." },
+    { unit: "2-6", question: "실행하면 무엇이 출력될까?", code: "d = {'name': 'pey'}\nprint(d.get('age', 0))",
+      options: ["None", "오류", "0"], answer: 2,
+      explain: "<code>get</code>은 없는 Key일 때 에러 대신 두 번째 인자로 준 기본값을 돌려준다." },
+    { unit: "2-6", question: "실행하면 무엇이 출력될까?", code: "d = {'name': 'pey'}\nprint('pey' in d)",
+      options: ["True", "False"], answer: 1,
+      explain: "<code>in</code>은 Key만 확인한다. <code>'pey'</code>는 Value라서 <code>False</code>다." },
+
+    // 2-7 (2)
+    { unit: "2-7", question: "실행하면 무엇이 출력될까?", code: "print(type({}))",
+      options: ["<class 'set'>", "<class 'dict'>"], answer: 1,
+      explain: "<code>{}</code>는 빈 딕셔너리다. 빈 집합은 <code>set()</code>으로 만든다." },
+    { unit: "2-7", question: "실행하면 무엇이 출력될까?", code: "s = {1}\ns.update(\"aab\")\nprint(len(s))",
+      options: ["3", "2", "4"], answer: 0,
+      explain: "<code>update</code>는 문자열을 한 글자씩 풀어 넣는다. <code>'a'</code>가 두 번이지만 중복은 하나만 남아서 <code>{1, 'a', 'b'}</code>다." },
+
+    // 2-8 (3)
+    { unit: "2-8", question: "실행하면 무엇이 출력될까?", code: "print(bool([]))",
+      options: ["True", "False"], answer: 1,
+      explain: "빈 리스트는 거짓이다." },
+    { unit: "2-8", question: "실행하면 무엇이 출력될까?", code: "print(True + True)",
+      options: ["2", "True", "오류"], answer: 0,
+      explain: "불 자료형은 정수의 한 종류라서 <code>True</code>는 1이다." },
+    { unit: "2-8", question: "실행하면 무엇이 출력될까?", code: "name = \"\"\nprint(name or \"익명\")",
+      options: ["False", "익명", "True"], answer: 1,
+      explain: "<code>or</code>는 앞이 거짓이면 뒤의 값을 그대로 돌려준다. 빈 문자열은 거짓이다." },
+
+    // 2-9 (4)
+    { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nc = [1, 2, 3]\nprint(a == c, a is c)",
+      options: ["True True", "False False", "True False"], answer: 2,
+      explain: "값은 같지만(<code>==</code>) 따로 만든 리스트라서 같은 대상은 아니다(<code>is</code>)." },
+    { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nb = a\na[1] = 4\nprint(b)",
+      options: ["[1, 2, 3]", "[4, 2, 3]", "[1, 4, 3]"], answer: 2,
+      explain: "<code>b = a</code>는 복사가 아니다. 두 이름이 같은 리스트 하나를 가리킨다.",
+      viz: `<svg width="300" height="92" viewBox="0 0 360 110"><rect x="8" y="10" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="30" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">a</text><rect x="8" y="70" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="90" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">b</text><path d="M62 25 C 120 25, 120 55, 170 55" fill="none" stroke="#171717" stroke-width="1.3"/><path d="M62 85 C 120 85, 120 55, 170 55" fill="none" stroke="#171717" stroke-width="1.3"/><rect x="176" y="36" width="172" height="38" rx="8" fill="#fff" stroke="#171717" stroke-width="1.3"/><text x="262" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="15">[1, 4, 3]</text></svg>` },
+    { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nb = a[:]\na[1] = 4\nprint(b)",
+      options: ["[1, 2, 3]", "[1, 4, 3]", "[4, 2, 3]"], answer: 0,
+      explain: "<code>a[:]</code>는 새 리스트를 만든다. 그래서 <code>a</code>를 바꿔도 <code>b</code>는 그대로다.",
+      more: { q: "안에 리스트가 들어 있어도 그대로일까?", a: "아니다. <code>a[:]</code>는 얕은 복사라 안쪽 리스트는 같이 쓴다. 안쪽까지 나누려면 <code>copy.deepcopy(a)</code>를 쓴다." } },
+    { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a, b = 3, 5\na, b = b, a\nprint(a, b)",
+      options: ["3 5", "5 3", "5 5"], answer: 1,
+      explain: "오른쪽 <code>b, a</code>의 값을 먼저 다 꺼내 둔 다음 왼쪽에 넣는다. 그래서 값을 잃지 않고 맞바뀐다." }
+  ]
+};
+
+</script>
+<script>
+(() => {
+const W = window.WORKBOOK, U = W.units, Q = W.questions;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const unitIdx = id => U.findIndex(u => u.id === id);
+
+/* ---------- 노트 ---------- */
+document.title = W.title;
+$('title').textContent = W.title;
+$('kicker').textContent = W.kicker || '';
+$('chap').textContent = $('chap2').textContent = W.chapter || '';
+$('toc').innerHTML = U.map((u, i) => `<a href="#u-${u.id}" data-i="${i}">${esc(u.title)}</a>`).join('');
+$('units').innerHTML = U.map((u, i) => {
+  const n = Q.filter(q => q.unit === u.id).length;
+  return `<section class="unit" data-i="${i}"><h2 id="u-${u.id}">${esc(u.title)}</h2>${u.html}
+    ${n ? `<button class="end" data-start="${u.id}">${esc(u.title)} 끝<b><span class="hlt">이 단원 문제 ${n}개 풀기</span> →</b></button>` : ''}</section>`;
+}).join('');
+document.querySelectorAll('details.deep').forEach(d => {
+  const b = document.createElement('div'); b.className = 'b';
+  [...d.childNodes].filter(n => n.nodeName !== 'SUMMARY').forEach(n => b.appendChild(n));
+  d.appendChild(b);
+});
+document.querySelectorAll('pre.code').forEach(addSend);
+function addSend(pre) {
+  // 대화형 모드(>>>) 예시나 실행할 수 없는 출력 예시(class="norun")에는 버튼을 달지 않는다
+  if (pre.classList.contains('norun') || pre.textContent.trimStart().startsWith('>>>')) return;
+  const b = document.createElement('button'); b.className = 'send'; b.textContent = 'IDE에서 열기 ↗';
+  b.onclick = () => openInIde(pre.querySelector('code') ? pre.querySelector('code').textContent : pre.firstChild.textContent);
+  pre.appendChild(b);
+}
+document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => startQuiz(Q.findIndex(q => q.unit === b.dataset.start), b.dataset.start));
+$('toQuiz').onclick = () => startQuiz(0);
+function spy() {
+  if ($('notes').hidden) return;
+  let i = 0; document.querySelectorAll('.unit').forEach((s, k) => { if (s.getBoundingClientRect().top < 200) i = k; });
+  document.querySelectorAll('.toc a').forEach(a => a.classList.toggle('on', +a.dataset.i === i));
+  $('curUnit').textContent = U[i] ? U[i].title : '';
+}
+addEventListener('scroll', spy, {passive: true}); spy();
+
+/* ---------- 문제 ---------- */
+// scope: 노트 단원 끝에서 들어왔으면 그 단원 id, 위쪽 '문제 풀기'로 들어왔으면 null(전체)
+const st = Q.map(() => ({sel: null, done: false}));
+let cur = 0, scope = null;
+// 브라우저 기록: 노트 ↔ 문제 전환만 쌓는다. 문제 사이 이동은 쌓지 않는다.
+// 떠나기 전에 지금 화면 상태(노트 스크롤 위치, 풀던 문제)를 현재 기록에 저장해 두고, 뒤로가기 때 되살린다.
+const NOTES_URL = location.pathname + location.search;
+let notesY = 0;   // 마지막으로 노트를 읽던 위치
+function saveHere() {
+  if (!$('notes').hidden) notesY = scrollY;
+  history.replaceState($('quiz').hidden ? {view: 'notes', y: scrollY} : {view: 'quiz', cur, scope}, '');
+}
+function startQuiz(i, unit = null, fromHistory = false) {
+  if (!fromHistory) { saveHere(); history.pushState({view: 'quiz', cur: Math.max(0, i), scope: unit}, '', '#quiz'); }
+  $('notes').hidden = true; $('quiz').hidden = false; scope = unit; cur = Math.max(0, i); scrollTo({top: 0, behavior: 'instant'}); render();
+}
+function showNotes(unitId, fromHistory = false, y = null) {
+  if (!fromHistory) { saveHere(); history.pushState({view: 'notes', y: notesY}, '', NOTES_URL); }
+  if (y === null && !unitId) y = notesY;
+  $('quiz').hidden = true; $('notes').hidden = false;
+  if (unitId) document.getElementById('u-' + unitId).scrollIntoView({behavior: 'instant'});
+  else if (y !== null) scrollTo({top: y, behavior: 'instant'});
+  spy();
+}
+addEventListener('popstate', e => {
+  const s = e.state || {view: location.hash === '#quiz' ? 'quiz' : 'notes', cur: 0, scope: null, y: 0};
+  if (s.view === 'quiz') startQuiz(s.cur || 0, s.scope || null, true);
+  else showNotes(null, true, s.y || 0);
+});
+$('toNotes').onclick = () => showNotes();
+const ok = i => st[i].done && st[i].sel === Q[i].answer;
+
+function render() {
+  const t = [];
+  Q.forEach((q, i) => {
+    if (i && Q[i - 1].unit !== q.unit) t.push('<span class="g"></span>');
+    const c = i === cur ? 'cur' : st[i].done ? (ok(i) ? 'ok' : 'no') : '';
+    t.push(`<i class="${c}" data-go="${i}" title="문제 ${i + 1}"></i>`);
+  });
+  $('track').innerHTML = t.join('');
+  $('track').querySelectorAll('[data-go]').forEach(e => e.onclick = () => go(+e.dataset.go));
+  renderQ();
+  placeNav();
+  history.replaceState({view: 'quiz', cur, scope}, '');   // 앞으로가기 때 풀던 문제로 돌아오도록
+}
+function renderQ() {
+  const q = Q[cur], s = st[cur], u = U[unitIdx(q.unit)], inU = Q.filter(x => x.unit === q.unit);
+  $('qWhere').textContent = `${u.title} ${inU.indexOf(q) + 1}/${inU.length}`;
+  const opts = q.options.map((o, i) => {
+    let cls = '', tag = '';
+    if (s.done) { if (i === q.answer) { cls = 'ans'; tag = '정답'; } else if (i === s.sel) { cls = 'mine'; tag = '✕ 내 답'; } }
+    else if (s.sel === i) cls = 'sel';
+    return `<button class="o ${cls}" data-pick="${i}" ${s.done ? 'disabled' : ''}><span class="k">${i + 1}</span><span class="v${/[가-힣]/.test(o) ? ' txt' : ''}">${esc(o)}</span><span class="t">${tag}</span></button>`;
+  }).join('');
+  $('qBody').innerHTML = `<h2>${q.question}</h2>
+    ${q.code ? `<pre class="code"><code>${esc(q.code)}</code></pre>` : ''}
+    <div class="opts">${opts}</div>
+    ${s.done ? `<div class="exp"><b>정답은 ${q.answer + 1}번 <code>${esc(q.options[q.answer])}</code></b><br>${q.explain}
+      ${q.viz ? `<div class="viz">${q.viz}</div>` : ''}
+      ${q.more ? `<details class="deep"><summary>${q.more.q}</summary><div class="b">${q.more.a}</div></details>` : ''}
+      <button class="rel" data-rel="${q.unit}">관련 노트: ${esc(u.title)} ↑</button></div>` : ''}`;
+  $('qBody').querySelectorAll('pre.code').forEach(addSend);
+  $('qBody').querySelectorAll('[data-pick]').forEach(b => b.onclick = () => pick(+b.dataset.pick));
+  const rel = $('qBody').querySelector('[data-rel]'); if (rel) rel.onclick = () => showNotes(rel.dataset.rel);
+
+  // 마지막 문제(전체) 또는 노트에서 들어온 단원의 마지막 문제에서는 다음 버튼이 바뀐다
+  const lastAll = cur === Q.length - 1;
+  const lastScope = scope !== null && q.unit === scope && (lastAll || Q[cur + 1].unit !== scope);
+  const nu = !lastAll ? U[unitIdx(Q[cur + 1].unit)] : null;
+  // 자리 3칸 고정: [←] [가운데 주 버튼] [→]. 버튼이 바뀌어도 ←, 가운데, → 위치는 그대로다.
+  // 가운데는 평소엔 문제 번호(글자), 갈 곳이 달라지는 단원 끝·마지막 문제에서만 버튼이 된다.
+  let mid = `<span class="count">${cur + 1} / ${Q.length}</span>`;
+  let right = `<button class="btn p" id="nx" ${lastAll ? 'disabled' : ''}>→</button>`;   // 문제 화면의 주요 이동은 →
+  if (s.done && lastScope && nu) {   // 노트에서 들어온 단원의 끝: 두 선택지를 같은 모양으로
+    mid = `<button class="btn" id="nn">${esc(nu.id)} 노트 보기 ↓</button>`;
+    right = `<button class="btn" id="nx">계속 풀기 →</button>`;
+  } else if (s.done && (lastAll || lastScope)) mid = `<button class="btn p" id="nn">노트 보기</button>`;
+  $('qnav').innerHTML = `<button class="btn" id="prev" ${cur === 0 ? 'disabled' : ''}>←</button>` + mid + right;
+  $('prev').onclick = () => go(cur - 1);
+  const fwd = () => { if (lastScope) scope = null; go(cur + 1); };   // '계속 풀기'면 전체 풀기로
+  if ($('nx')) $('nx').onclick = fwd;
+  if ($('nn')) $('nn').onclick = () => showNotes(nu && lastScope ? nu.id : null);
+}
+function placeNav() { const r = $('stage').getBoundingClientRect(); $('qnav').style.left = (r.left + r.width / 2) + 'px'; }
+addEventListener('resize', placeNav);
+function pick(i) { if (st[cur].done) return; st[cur].sel = i; st[cur].done = true; render(); }
+function go(i) {
+  if (i < 0 || i >= Q.length) return;
+  if (scope !== null && Q[i].unit !== scope) scope = null;   // 다른 단원으로 옮기면 전체 풀기로
+  cur = i; scrollTo({top: 0, behavior: 'instant'}); render();
+}
+
+/* ---------- Python (Pyodide, 처음 실행할 때 불러옴) ---------- */
+const ed = $('ed'), out = $('out');
+// 맥은 ⌘, 그 밖(윈도우·리눅스)은 Ctrl 로 안내한다.
+const MOD = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘' : 'Ctrl+';
+ed.placeholder = `# 여기에 파이썬 코드를 쓰고 ▶ 실행 (${MOD}Enter)`;
+let py = null, loading = null;
+function toggleIde(v) {
+  const open = v === undefined ? !$('app').classList.contains('ide-open') : v;
+  $('app').classList.toggle('ide-open', open);
+  $('pill').textContent = open ? '▶ Python 닫기' : '▶ Python';
+  if (open) ed.focus();
+  setTimeout(placeNav, 200);
+}
+function openInIde(code) { ed.value = code.replace(/\n$/, ''); out.textContent = ''; toggleIde(true); }
+$('pill').onclick = () => toggleIde();
+$('clear').onclick = () => { ed.value = ''; out.textContent = ''; ed.focus(); };
+function loadPy() {
+  if (loading) return loading;
+  $('ideSt').textContent = '불러오는 중…';
+  loading = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    s.onload = async () => { try { py = await loadPyodide(); $('ideSt').textContent = ''; res(py); } catch (e) { rej(e); } };
+    s.onerror = () => { $('ideSt').textContent = '불러오기 실패 (인터넷 연결 확인)'; loading = null; rej(); };
+    document.head.appendChild(s);
+  });
+  return loading;
+}
+async function run() {
+  out.textContent = '';
+  try { await loadPy(); } catch { return; }
+  const buf = [];
+  py.setStdout({batched: s => buf.push(s)});
+  py.setStderr({batched: s => buf.push(s)});
+  try {
+    py.globals.set('__name__', '__main__');
+    await py.runPythonAsync(ed.value);   // .py 파일처럼 print 한 것만 보여 준다
+    out.textContent = buf.join('\n');
+  } catch (e) {
+    const msg = String(e.message || e).trim().split('\n');
+    const i = msg.findIndex(l => l.includes('File "<exec>"'));
+    out.innerHTML = esc(buf.join('\n')) + (buf.length ? '\n' : '') + `<span class="err">${esc((i >= 0 ? msg.slice(i) : msg).join('\n'))}</span>`;
+  }
+}
+$('runBtn').onclick = run;
+ed.addEventListener('keydown', e => {
+  if (e.key === 'Tab') { e.preventDefault(); const p = ed.selectionStart; ed.setRangeText('    ', p, ed.selectionEnd, 'end'); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); run(); }
+});
+
+/* ---------- 단축키: 문제 화면의 ← → 만 ---------- */
+addEventListener('keydown', e => {
+  if (document.activeElement === ed || $('quiz').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'ArrowRight' && $('nx') && !$('nx').disabled) $('nx').click();
+  else if (e.key === 'ArrowLeft') go(cur - 1);
+});
+
+if (location.hash === '#quiz') { history.replaceState({view: 'quiz', cur: 0, scope: null}, ''); startQuiz(0, null, true); }
+else history.replaceState({view: 'notes', y: 0}, '');
+})();
+</script>
+</body>
+</html>
