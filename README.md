@@ -21,6 +21,9 @@ AI Native Career Camp에서 배운 내용과 실습 결과물을 일차별로 �
 ### 1차 프로젝트
 - [탈탈](project1/) ([배포](https://taltal.vercel.app)): 산 재료를 여러 요리에 나눠 쓰는 요리 묶음 추천 서비스
 
+### 스터디
+- [파이썬 스터디](python-study/): 점프 투 파이썬 스터디. [문제집 템플릿](python-study/quiz/)
+
 ### 17일차~
 | 일차 | 주제 | 만든 것 |
 |---|---|---|

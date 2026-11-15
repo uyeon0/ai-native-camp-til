@@ -6,6 +6,7 @@
 
 - 일차마다 `dayXX/README.md` (두 자리 숫자). 그날 만든 결과물은 같은 폴더 안에 하위 폴더로 둔다.
 - 1차 프로젝트처럼 여러 날에 걸친 것은 `projectN/README.md`로 둔다.
+- 정규 수업 밖에서 하는 스터디는 `<주제>-study/README.md`로 둔다. 회차 기록과 스터디용으로 만든 도구는 그 안에 둔다 (예: `python-study/quiz/`).
 - 메인 `README.md` 목차 표: `| [Day XX](dayXX/) | 주제 | 만든 것 |`. 주제는 그날 README 부제와 같게 쓴다.
 - 결과물 폴더에 문서와 코드가 섞이면 문서는 `docs/`로 옮긴다. 상대 경로가 깨지는 이동은 하지 않는다.
 - 파이썬 결과물에는 실행 방법을 적은 짧은 `README.md`와 `requirements.txt`를 둔다.
