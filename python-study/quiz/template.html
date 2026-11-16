@@ -49,6 +49,7 @@ h1{font:700 32px/1.3 var(--sans);margin:6px 0 4px;letter-spacing:-.02em}
 .unit p,.unit li{color:var(--ink2)}
 .unit p{margin:0 0 10px}
 mark{background:linear-gradient(transparent 50%,var(--hl) 50%,var(--hl) 94%,transparent 94%);color:var(--ink);padding:0 1px}
+*{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"calt" 0!important}
 code{font:.875em var(--mono);background:var(--codebg);border-radius:4px;padding:1px 5px}
 pre.code{background:var(--codebg);border-radius:var(--r);font:14px/1.7 var(--mono);padding:14px 18px;position:relative;margin:10px 0 14px;white-space:pre;overflow-x:auto;color:#1f1f1f}
 pre.code code{background:none;padding:0;font:inherit}
@@ -172,6 +173,12 @@ $('title').textContent = W.title;
 $('kicker').textContent = W.kicker || '';
 $('chap').textContent = $('chap2').textContent = W.chapter || '';
 $('toc').innerHTML = U.map((u, i) => `<a href="#u-${u.id}" data-i="${i}">${esc(u.title)}</a>`).join('');
+// 목차 링크가 주소(#u-…)를 바꾸면 popstate가 일어나 맨 위로 갔다가 내려온다. 주소는 두고 스크롤만 한다.
+$('toc').addEventListener('click', e => {
+  const a = e.target.closest('a'); if (!a) return;
+  e.preventDefault();
+  document.querySelector(a.getAttribute('href')).scrollIntoView({behavior: 'smooth'});
+});
 $('units').innerHTML = U.map((u, i) => {
   const n = Q.filter(q => q.unit === u.id).length;
   return `<section class="unit" data-i="${i}"><h2 id="u-${u.id}">${esc(u.title)}</h2>${u.html}
@@ -348,6 +355,11 @@ addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' && $('nx') && !$('nx').disabled) $('nx').click();
   else if (e.key === 'ArrowLeft') go(cur - 1);
 });
+// 외부 링크는 새 탭으로 연다. 해설은 나중에 그려지므로 클릭할 때 정한다.
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="http"]');
+  if (a) { a.target = '_blank'; a.rel = 'noopener'; }
+}, true);
 
 if (location.hash === '#quiz') { history.replaceState({view: 'quiz', cur: 0, scope: null}, ''); startQuiz(0, null, true); }
 else history.replaceState({view: 'notes', y: 0}, '');
