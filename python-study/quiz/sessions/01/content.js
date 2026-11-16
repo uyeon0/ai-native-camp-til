@@ -14,7 +14,7 @@ window.WORKBOOK = {
 
 <h3>파이썬의 특징</h3>
 <blockquote>Life is too short, You need python.</blockquote>
-<p>파이썬은 <mark>사람이 코드를 짜는 속도가 빠른 언어</mark>다. 컴퓨터가 코드를 실행하는 속도는 오히려 C나 Java보다 느린 편이다. 실행 성능을 조금 내주고 사람의 시간을 아끼는 쪽을 택한 언어다.</p>
+<p>파이썬은 사람이 코드를 짜는 속도가 빠른 언어다. 컴퓨터가 코드를 실행하는 속도는 오히려 C나 Java보다 느린 편이다. 실행 성능을 조금 내주고 사람의 시간을 아끼는 쪽을 택한 언어다.</p>
 <ul>
   <li><b>코드가 짧다</b>: 같은 일을 하는 코드가 다른 언어보다 짧다.</li>
   <li><b>읽기 쉽다</b>: 영어 문장처럼 읽힌다. <code>if 4 in [1, 2, 3, 4]:</code>는 "만약 4가 1, 2, 3, 4 안에 있으면"으로 읽으면 된다.</li>
@@ -257,15 +257,15 @@ print("My Program")
 print("=" * 50)</code></pre>
 
 <h3>인덱싱: 한 글자 꺼내기</h3>
-<p>문자열의 글자마다 번호가 붙어 있다. 이 번호를 <b>인덱스</b>라고 하고, <mark>0부터 센다.</mark> <code>a[3]</code>은 0, 1, 2, 3을 세어 네 번째 글자다. 뒤에서부터 셀 때는 <code>-1</code>이 마지막 글자다.</p>
+<p>문자열의 글자마다 번호가 붙어 있다. <mark>이 번호를 <b>인덱스</b>라고 하고, 0부터 센다.</mark> <code>a[3]</code>은 0, 1, 2, 3을 세어 네 번째 글자다. 뒤에서부터 셀 때는 <code>-1</code>이 마지막 글자다.</p>
 <div class="viz"><svg width="440" height="96" viewBox="0 0 440 96">
   <g font-family="JetBrains Mono" text-anchor="middle">
     <g font-size="11" fill="#8c8c8c"><text x="40" y="14">0</text><text x="100" y="14">1</text><text x="160" y="14">2</text><text x="220" y="14">3</text><text x="280" y="14">4</text><text x="340" y="14">5</text></g>
-    <rect x="70" y="22" width="180" height="40" fill="var(--hl)"/>
+    <rect x="130" y="22" width="180" height="40" fill="var(--hl)"/>
     <g fill="none" stroke="#171717" stroke-width="1.2"><rect x="10" y="22" width="360" height="40" rx="6"/><line x1="70" y1="22" x2="70" y2="62"/><line x1="130" y1="22" x2="130" y2="62"/><line x1="190" y1="22" x2="190" y2="62"/><line x1="250" y1="22" x2="250" y2="62"/><line x1="310" y1="22" x2="310" y2="62"/></g>
     <g font-size="17"><text x="40" y="48">p</text><text x="100" y="48">y</text><text x="160" y="48">t</text><text x="220" y="48">h</text><text x="280" y="48">o</text><text x="340" y="48">n</text></g>
     <g font-size="11" fill="#8c8c8c"><text x="40" y="80">-6</text><text x="100" y="80">-5</text><text x="160" y="80">-4</text><text x="220" y="80">-3</text><text x="280" y="80">-2</text><text x="340" y="80">-1</text></g>
-    <text x="384" y="47" font-size="12" text-anchor="start">[1:4]</text>
+    <text x="384" y="47" font-size="12" text-anchor="start">[2:5]</text>
   </g>
 </svg></div>
 <pre class="code"><code>a = "Life is too short, You need Python"
@@ -497,7 +497,7 @@ print(sorted([3, 1, 2]))   # [1, 2, 3]</code></pre>
       id: "2-5",
       title: "2-5 튜플",
       html: `
-<p><b>튜플</b>은 리스트와 거의 같지만 <mark>값을 바꿀 수 없다.</mark> 리스트는 <code>[]</code>, 튜플은 <code>()</code>로 감싼다. 값이 바뀌지 않아야 할 때 튜플을, 자주 바뀔 때 리스트를 쓴다.</p>
+<p><mark><b>튜플</b>은 리스트와 거의 같지만 값을 바꿀 수 없다.</mark> 리스트는 <code>[]</code>, 튜플은 <code>()</code>로 감싼다. 값이 바뀌지 않아야 할 때 튜플을, 자주 바뀔 때 리스트를 쓴다.</p>
 <pre class="code"><code>t1 = ()
 t2 = (1,)            # 요소가 하나면 쉼표가 꼭 있어야 한다
 t3 = (1, 2, 3)
@@ -774,7 +774,7 @@ print(a == c)   # True   값은 같다
 print(a is c)   # False  같은 대상은 아니다</code></pre>
 
 <h3>b = a는 복사가 아니다</h3>
-<p><code>b = a</code>는 리스트 하나를 <code>a</code>와 <code>b</code> 두 이름이 함께 가리키게 할 뿐이다. 그래서 <mark><code>a</code>로 바꾸면 <code>b</code>로 봐도 바뀌어 있다.</mark></p>
+<p><mark><code>b = a</code>는 리스트 하나를 <code>a</code>와 <code>b</code> 두 이름이 함께 가리키게 할 뿐이다.</mark> 그래서 <code>a</code>로 바꾸면 <code>b</code>로 봐도 바뀌어 있다.</p>
 <div class="viz"><svg width="360" height="110" viewBox="0 0 360 110">
   <rect x="8" y="10" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="30" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">a</text>
   <rect x="8" y="70" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="90" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">b</text>
@@ -879,118 +879,121 @@ STORE_NAME       b</code></pre>
     { unit: "1", question: "이 코드를 파일로 저장해 실행하면 화면에 무엇이 보일까?",
       code: "1 + 1\nprint(2 * 3)",
       options: ["2 와 6", "6", "아무것도 안 보인다"], answer: 1,
-      explain: "파일로 실행하면 <code>print</code>로 출력한 것만 보인다. <code>1 + 1</code>은 계산만 하고 버려진다. 대화형 모드였다면 2도 보였을 것이다." },
+      explain: "파일로 실행하면 <code>print</code>로 출력한 것만 화면에 보인다. 첫 줄 <code>1 + 1</code>은 2를 계산하지만 출력하라는 말이 없어서 그냥 버려진다. 둘째 줄이 <code>2 * 3</code>을 계산해 6을 출력한다. 대화형 모드였다면 2도 보였을 것이다." },
 
     // 2-1 (3)
     { unit: "2-1", question: "실행하면 무엇이 출력될까?", code: "print(7 / 2)",
       options: ["3", "3.0", "3.5"], answer: 2,
-      explain: "<code>/</code>는 항상 실수를 돌려준다." },
+      explain: "<code>/</code>는 나눈 결과를 그대로 실수로 돌려준다. 7을 2로 나누면 3.5다. 몫만 원하면 <code>//</code>를 써야 하고, 그러면 3이 나온다." },
     { unit: "2-1", question: "실행하면 무엇이 출력될까?", code: "print(10 // 4, 10 % 4)",
       options: ["2 2", "2.5 2", "3 2"], answer: 0,
-      explain: "<code>//</code>는 몫 2, <code>%</code>는 나머지 2다." },
+      explain: "10을 4로 나누면 몫이 2이고 나머지가 2다. <code>//</code>는 몫 2를, <code>%</code>는 나머지 2를 돌려준다. <code>//</code>는 소수점 아래를 버린 정수라서 2.5가 아니다." },
     { unit: "2-1", question: "실행하면 무엇이 출력될까?", code: "print(-7 // 2)",
       options: ["-3", "-3.5", "-4"], answer: 2,
-      explain: "<code>//</code>는 내림이다. -3.5보다 작거나 같은 가장 큰 정수는 -4다.",
+      explain: "-7을 2로 나누면 -3.5다. <code>//</code>는 소수점 아래를 버리는 게 아니라 더 작은 쪽 정수로 내린다. -3.5보다 작거나 같은 가장 큰 정수는 -3이 아니라 -4다.",
       more: { q: "7.0 // 2는?", a: "<code>3.0</code>이다. 실수가 끼면 결과도 실수가 된다." } },
 
     // 2-2 (3)
     { unit: "2-2", question: "실행하면 무엇이 출력될까?", code: "print(\"ab\" * 3)",
       options: ["ababab", "ab3", "오류"], answer: 0,
-      explain: "문자열에 정수를 곱하면 그만큼 반복한다." },
+      explain: "문자열에 정수를 곱하면 그 횟수만큼 이어 붙인다. <code>\"ab\"</code>를 3번 이어 붙여 <code>ababab</code>가 된다. 숫자 3이 문자열 뒤에 붙는 게 아니다." },
     { unit: "2-2", question: "실행하면 무엇이 출력될까?", code: "s = \"python\"\nprint(s[1:4])",
       options: ["pyt", "yth", "ytho"], answer: 1,
-      explain: "인덱스 1부터 3까지다. 끝 번호 4는 포함하지 않는다." },
+      explain: "<code>s[1:4]</code>는 인덱스 1부터 4 바로 앞까지, 즉 1, 2, 3번 글자를 꺼낸다. <code>python</code>에서 1은 y, 2는 t, 3은 h라서 <code>yth</code>다. 끝 번호 4의 o는 포함하지 않는다.",
+      viz: `<svg width="440" height="90" viewBox="0 0 440 90"><g font-family="JetBrains Mono" text-anchor="middle"><g font-size="11" fill="#8c8c8c"><text x="40" y="14">0</text><text x="100" y="14">1</text><text x="160" y="14">2</text><text x="220" y="14">3</text><text x="280" y="14">4</text><text x="340" y="14">5</text></g><rect x="70" y="22" width="180" height="40" fill="var(--hl)"/><g fill="none" stroke="#171717" stroke-width="1.2"><rect x="10" y="22" width="360" height="40" rx="6"/><line x1="70" y1="22" x2="70" y2="62"/><line x1="130" y1="22" x2="130" y2="62"/><line x1="190" y1="22" x2="190" y2="62"/><line x1="250" y1="22" x2="250" y2="62"/><line x1="310" y1="22" x2="310" y2="62"/></g><g font-size="17"><text x="40" y="48">p</text><text x="100" y="48">y</text><text x="160" y="48">t</text><text x="220" y="48">h</text><text x="280" y="48">o</text><text x="340" y="48">n</text></g><line x1="250" y1="16" x2="250" y2="70" stroke="#171717" stroke-width="1.2" stroke-dasharray="3 3"/><text x="250" y="84" font-size="11">끝 번호 4 (포함 안 함)</text></g></svg>` },
     { unit: "2-2", question: "실행하면 무엇이 출력될까?", code: "s = \"Pithon\"\ns[1] = \"y\"\nprint(s)",
       options: ["오류", "Python", "Pithon"], answer: 0,
-      explain: "문자열은 바꿀 수 없어서 한 글자 대입에서 <code>TypeError</code>가 난다.",
+      explain: "<code>s[1]</code>로 글자를 꺼낼 수는 있지만, 그 자리에 다른 글자를 넣을 수는 없다. 문자열은 한 번 만들면 바꿀 수 없는 자료형이라 둘째 줄에서 <code>TypeError</code>가 나고, <code>print</code>까지 가지 못한다.",
       more: { q: "그럼 어떻게 고칠까?", a: "새 문자열을 만들어 다시 대입한다. <code>s = s[:1] + \"y\" + s[2:]</code>" } },
 
     // 2-3 (4)
     { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "age = 30\nprint(f\"{age + 1}살\")",
       options: ["{age + 1}살", "301살", "31살"], answer: 2,
-      explain: "f 문자열의 중괄호 안에는 식을 넣을 수 있다. 계산한 결과가 들어간다." },
+      explain: "f 문자열의 중괄호 안에는 변수뿐 아니라 식도 넣을 수 있다. <code>age + 1</code>을 계산한 31이 중괄호 자리에 들어가서 <code>31살</code>이 된다." },
     { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "a = \"hi\"\na.upper()\nprint(a)",
       options: ["HI", "hi", "None"], answer: 1,
-      explain: "문자열 함수는 새 문자열을 돌려줄 뿐 원본을 바꾸지 않는다. 결과를 다시 대입하지 않았으니 그대로다." },
+      explain: "<code>a.upper()</code>는 대문자로 바꾼 새 문자열 <code>\"HI\"</code>를 돌려줄 뿐, <code>a</code> 자체는 바꾸지 않는다. 돌려받은 값을 어디에도 넣지 않았으니 버려지고, <code>a</code>는 <code>\"hi\"</code> 그대로다. <code>a = a.upper()</code>처럼 다시 넣어야 바뀐다." },
     { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "print(\"Error is %d%%.\" % 98)",
       options: ["Error is 98%.", "Error is 98%%.", "오류"], answer: 0,
-      explain: "<code>%</code> 방식 문자열 안에서 <code>%%</code>는 <code>%</code> 문자 하나가 된다." },
+      explain: "<code>%d</code> 자리에 98이 들어간다. <code>%</code> 방식 문자열에서 <code>%</code>는 값을 넣을 자리를 뜻하는 기호라서, <code>%</code> 글자 자체를 쓰려면 <code>%%</code>로 두 번 쓴다. 출력할 때는 <code>%</code> 하나로 바뀐다." },
     { unit: "2-3", question: "실행하면 무엇이 출력될까?", code: "print(\"{0:=^6}\".format(\"hi\"))",
       options: ["hi====", "====hi", "==hi=="], answer: 2,
-      explain: "<code>^</code>는 가운데 정렬, 앞의 <code>=</code>는 채울 문자, 6은 전체 길이다." },
+      explain: "<code>{0:=^6}</code>은 0번 값을 전체 6칸에 <code>^</code>(가운데) 정렬하고, 빈칸을 <code>=</code>로 채우라는 뜻이다. <code>hi</code>는 2글자라 남는 4칸을 양쪽에 2개씩 채워 <code>==hi==</code>가 된다." },
 
     // 2-4 (5)
     { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3, ['a', 'b', 'c']]\nprint(a[3][1])",
       options: ["['a', 'b', 'c']", "b", "a"], answer: 1,
-      explain: "<code>a[3]</code>은 안쪽 리스트이고, 거기서 다시 <code>[1]</code>을 꺼낸다." },
+      explain: "<code>a[3]</code>은 네 번째 요소인 안쪽 리스트 <code>['a', 'b', 'c']</code>다. 거기서 다시 <code>[1]</code>로 두 번째 요소를 꺼내면 <code>'b'</code>다. <code>print</code>는 문자열의 따옴표 없이 b만 출력한다.",
+      viz: `<svg width="420" height="104" viewBox="0 0 420 104"><g font-family="JetBrains Mono" text-anchor="middle"><text x="40" y="16" font-size="11" fill="#8c8c8c">0</text><rect x="10" y="24" width="60" height="56" fill="#fff" stroke="#171717" stroke-width="1.2"/><text x="40" y="58" font-size="15">1</text><text x="100" y="16" font-size="11" fill="#8c8c8c">1</text><rect x="70" y="24" width="60" height="56" fill="#fff" stroke="#171717" stroke-width="1.2"/><text x="100" y="58" font-size="15">2</text><text x="160" y="16" font-size="11" fill="#8c8c8c">2</text><rect x="130" y="24" width="60" height="56" fill="#fff" stroke="#171717" stroke-width="1.2"/><text x="160" y="58" font-size="15">3</text><text x="295" y="16" font-size="11" font-weight="600">3</text><rect x="190" y="24" width="210" height="56" fill="#fff" stroke="#171717" stroke-width="2"/><rect x="202" y="36" width="58" height="32" rx="5" fill="#fff" stroke="#171717" stroke-width="1.2"/><text x="231" y="58" font-size="15" font-weight="400">'a'</text><text x="231" y="96" font-size="11" fill="#8c8c8c" font-weight="400">0</text><rect x="266" y="36" width="58" height="32" rx="5" fill="var(--hl)" stroke="#171717" stroke-width="1.2"/><text x="295" y="58" font-size="15" font-weight="600">'b'</text><text x="295" y="96" font-size="11" fill="#171717" font-weight="600">1</text><rect x="330" y="36" width="58" height="32" rx="5" fill="#fff" stroke="#171717" stroke-width="1.2"/><text x="359" y="58" font-size="15" font-weight="400">'c'</text><text x="359" y="96" font-size="11" fill="#8c8c8c" font-weight="400">2</text></g></svg>` },
     { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nprint(a + [4])",
       options: ["[1, 2, 3, [4]]", "[1, 2, 3, 4]", "오류"], answer: 1,
-      explain: "리스트끼리 더하면 이어 붙인 새 리스트가 된다." },
+      explain: "리스트끼리 <code>+</code>로 더하면 두 리스트의 요소를 이어 붙인 새 리스트가 된다. <code>[1, 2, 3]</code> 뒤에 <code>[4]</code>의 요소 4가 붙어 <code>[1, 2, 3, 4]</code>다. <code>[4]</code>가 리스트째로 들어가지 않는다." },
     { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\na.append([4, 5])\nprint(len(a))",
       options: ["5", "3", "4"], answer: 2,
-      explain: "<code>append</code>는 받은 값을 통째로 하나 넣는다. <code>[4, 5]</code>가 요소 하나가 되어 길이는 4다.",
+      explain: "<code>append</code>는 받은 값을 통째로 요소 하나로 넣는다. <code>[4, 5]</code>가 풀리지 않고 리스트째 들어가서 <code>a</code>는 <code>[1, 2, 3, [4, 5]]</code>가 된다. 요소가 4개라 길이는 4다.",
       more: { q: "길이를 5로 만들려면?", a: "<code>a.extend([4, 5])</code>나 <code>a += [4, 5]</code>처럼 풀어서 이어 붙인다." } },
     { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nprint(a[2] + \"hi\")",
       options: ["오류", "3hi", "[1, 2, 3hi]"], answer: 0,
-      explain: "<code>a[2]</code>는 정수 3이다. 정수와 문자열은 더할 수 없어서 <code>TypeError</code>가 난다. <code>str(a[2])</code>로 바꿔야 한다." },
+      explain: "<code>a[2]</code>는 세 번째 요소인 정수 3이다. 정수와 문자열은 <code>+</code>로 더할 수 없어서 <code>TypeError</code>가 난다. <code>str(a[2]) + \"hi\"</code>처럼 정수를 문자열로 바꾸면 <code>3hi</code>가 된다." },
     { unit: "2-4", question: "실행하면 무엇이 출력될까?", code: "a = [3, 1, 2]\nb = a.sort()\nprint(b)",
       options: ["[1, 2, 3]", "[3, 1, 2]", "None"], answer: 2,
-      explain: "<code>sort</code>는 원본 <code>a</code>를 정렬하고 아무것도 돌려주지 않는다(<code>None</code>).",
+      explain: "<code>a.sort()</code>는 <code>a</code> 자체를 <code>[1, 2, 3]</code>으로 정렬하지만, 돌려주는 값은 없다. 돌려주는 값이 없으면 <code>None</code>이므로 <code>b</code>에는 <code>None</code>이 들어간다.",
       more: { q: "정렬된 새 리스트를 b에 받으려면?", a: "<code>b = sorted(a)</code>를 쓴다. 원본은 그대로 두고 정렬된 새 리스트를 돌려준다." } },
 
     // 2-5 (2)
     { unit: "2-5", question: "실행하면 무엇이 출력될까?", code: "print(type((1)))",
       options: ["<class 'int'>", "<class 'tuple'>", "오류"], answer: 0,
-      explain: "튜플을 만드는 건 쉼표다. <code>(1)</code>은 괄호로 감싼 숫자 1이고, 튜플은 <code>(1,)</code>이다." },
+      explain: "튜플을 만드는 건 괄호가 아니라 쉼표다. <code>(1)</code>은 계산 순서를 정하는 괄호로 감싼 숫자 1일 뿐이라 <code>int</code>다. 요소가 하나인 튜플은 <code>(1,)</code>처럼 쉼표를 붙여야 한다." },
     { unit: "2-5", question: "실행하면 무엇이 출력될까?", code: "t = ([1],)\nt[0].append(2)\nprint(t)",
       options: ["오류", "([1, 2],)", "([1],)"], answer: 1,
-      explain: "튜플은 바꿀 수 없지만, 안에 든 리스트는 리스트라서 바꿀 수 있다.",
+      explain: "튜플 <code>t</code>의 자리는 바꿀 수 없지만, <code>t[0]</code>에 든 리스트는 리스트라서 내용을 바꿀 수 있다. <code>append</code>는 튜플 자리를 바꾸지 않고 그 리스트에 2를 더할 뿐이라 오류가 나지 않는다. 그래서 <code>([1, 2],)</code>가 된다.",
       more: { q: "t[0] += [2]라고 쓰면?", a: "<code>TypeError</code>가 난다. 그런데 리스트는 이미 늘어나서 <code>t</code>는 <code>([1, 2],)</code>가 된다. <code>+=</code>는 늘린 다음 튜플 자리에 다시 대입하려 하기 때문이다." } },
 
     // 2-6 (3)
     { unit: "2-6", question: "실행하면 무엇이 출력될까?", code: "d = {1: 'a', 1: 'b'}\nprint(d)",
       options: ["{1: 'b'}", "{1: 'a'}", "{1: 'a', 1: 'b'}"], answer: 0,
-      explain: "Key가 겹치면 하나만 남고, 뒤에 쓴 값이 앞의 값을 덮어쓴다." },
+      explain: "딕셔너리에서 Key는 겹칠 수 없다. 같은 Key <code>1</code>이 두 번 나오면 하나만 남고, 나중에 쓴 <code>'b'</code>가 앞의 <code>'a'</code>를 덮어쓴다." },
     { unit: "2-6", question: "실행하면 무엇이 출력될까?", code: "d = {'name': 'pey'}\nprint(d.get('age', 0))",
       options: ["None", "오류", "0"], answer: 2,
-      explain: "<code>get</code>은 없는 Key일 때 에러 대신 두 번째 인자로 준 기본값을 돌려준다." },
+      explain: "<code>d['age']</code>처럼 없는 Key로 꺼내면 오류가 난다. <code>get</code>은 없는 Key일 때 오류 대신 두 번째 인자로 준 기본값을 돌려준다. 기본값을 주지 않았다면 <code>None</code>이 나왔을 것이다." },
     { unit: "2-6", question: "실행하면 무엇이 출력될까?", code: "d = {'name': 'pey'}\nprint('pey' in d)",
       options: ["True", "False"], answer: 1,
-      explain: "<code>in</code>은 Key만 확인한다. <code>'pey'</code>는 Value라서 <code>False</code>다." },
+      explain: "딕셔너리에서 <code>in</code>은 Key 중에 있는지만 확인한다. <code>d</code>의 Key는 <code>'name'</code> 하나이고 <code>'pey'</code>는 Value라서 <code>False</code>다. Value를 확인하려면 <code>'pey' in d.values()</code>로 쓴다." },
 
     // 2-7 (2)
     { unit: "2-7", question: "실행하면 무엇이 출력될까?", code: "print(type({}))",
       options: ["<class 'set'>", "<class 'dict'>"], answer: 1,
-      explain: "<code>{}</code>는 빈 딕셔너리다. 빈 집합은 <code>set()</code>으로 만든다." },
+      explain: "중괄호는 딕셔너리와 집합이 함께 쓰는 기호인데, 비어 있는 <code>{}</code>는 딕셔너리로 정해져 있다. 빈 집합은 <code>set()</code>으로 만들어야 한다." },
     { unit: "2-7", question: "실행하면 무엇이 출력될까?", code: "s = {1}\ns.update(\"aab\")\nprint(len(s))",
       options: ["3", "2", "4"], answer: 0,
-      explain: "<code>update</code>는 문자열을 한 글자씩 풀어 넣는다. <code>'a'</code>가 두 번이지만 중복은 하나만 남아서 <code>{1, 'a', 'b'}</code>다." },
+      explain: "<code>update</code>는 받은 값을 하나씩 풀어서 넣는다. 문자열 <code>\"aab\"</code>는 <code>'a'</code>, <code>'a'</code>, <code>'b'</code>로 풀리는데, 집합은 중복을 하나만 남긴다. 그래서 <code>s</code>는 <code>{1, 'a', 'b'}</code>이고 길이는 3이다." },
 
     // 2-8 (3)
     { unit: "2-8", question: "실행하면 무엇이 출력될까?", code: "print(bool([]))",
       options: ["True", "False"], answer: 1,
-      explain: "빈 리스트는 거짓이다." },
+      explain: "자료형마다 비어 있으면 거짓, 무언가 들어 있으면 참으로 취급한다. <code>[]</code>는 빈 리스트라서 <code>bool</code>로 바꾸면 <code>False</code>다." },
     { unit: "2-8", question: "실행하면 무엇이 출력될까?", code: "print(True + True)",
       options: ["2", "True", "오류"], answer: 0,
-      explain: "불 자료형은 정수의 한 종류라서 <code>True</code>는 1이다." },
+      explain: "불 자료형은 정수의 한 종류라서 <code>True</code>는 1, <code>False</code>는 0처럼 계산된다. <code>True + True</code>는 1 + 1이라 2다." },
     { unit: "2-8", question: "실행하면 무엇이 출력될까?", code: "name = \"\"\nprint(name or \"익명\")",
       options: ["False", "익명", "True"], answer: 1,
-      explain: "<code>or</code>는 앞이 거짓이면 뒤의 값을 그대로 돌려준다. 빈 문자열은 거짓이다." },
+      explain: "<code>or</code>는 앞의 값이 참이면 앞의 값을, 거짓이면 뒤의 값을 그대로 돌려준다. <code>name</code>은 빈 문자열이라 거짓이므로 뒤의 <code>\"익명\"</code>이 나온다. <code>True</code>나 <code>False</code>를 돌려주는 게 아니다." },
 
     // 2-9 (4)
     { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nc = [1, 2, 3]\nprint(a == c, a is c)",
       options: ["True True", "False False", "True False"], answer: 2,
-      explain: "값은 같지만(<code>==</code>) 따로 만든 리스트라서 같은 대상은 아니다(<code>is</code>)." },
+      explain: "<code>==</code>는 값이 같은지, <code>is</code>는 같은 대상인지를 본다. <code>a</code>와 <code>c</code>는 내용이 같아서 <code>==</code>는 <code>True</code>다. 하지만 각각 따로 만든 리스트라서 <code>is</code>는 <code>False</code>다." },
     { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nb = a\na[1] = 4\nprint(b)",
       options: ["[1, 2, 3]", "[4, 2, 3]", "[1, 4, 3]"], answer: 2,
-      explain: "<code>b = a</code>는 복사가 아니다. 두 이름이 같은 리스트 하나를 가리킨다.",
+      explain: "<code>b = a</code>는 리스트를 복사하지 않고, <code>b</code>라는 이름이 <code>a</code>와 같은 리스트를 가리키게 한다. 리스트가 하나뿐이니 <code>a[1] = 4</code>로 바꾸면 <code>b</code>로 봐도 바뀌어 있다.",
       viz: `<svg width="300" height="92" viewBox="0 0 360 110"><rect x="8" y="10" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="30" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">a</text><rect x="8" y="70" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="90" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">b</text><path d="M62 25 C 120 25, 120 55, 170 55" fill="none" stroke="#171717" stroke-width="1.3"/><path d="M62 85 C 120 85, 120 55, 170 55" fill="none" stroke="#171717" stroke-width="1.3"/><rect x="176" y="36" width="172" height="38" rx="8" fill="#fff" stroke="#171717" stroke-width="1.3"/><text x="262" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="15">[1, 4, 3]</text></svg>` },
     { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a = [1, 2, 3]\nb = a[:]\na[1] = 4\nprint(b)",
       options: ["[1, 2, 3]", "[1, 4, 3]", "[4, 2, 3]"], answer: 0,
-      explain: "<code>a[:]</code>는 새 리스트를 만든다. 그래서 <code>a</code>를 바꿔도 <code>b</code>는 그대로다.",
+      explain: "<code>a[:]</code>는 처음부터 끝까지 슬라이싱해서 내용이 같은 새 리스트를 만든다. <code>a</code>와 <code>b</code>가 서로 다른 리스트를 가리키므로 <code>a[1] = 4</code>는 <code>a</code>만 바꾸고 <code>b</code>는 그대로다.",
+      viz: `<svg width="300" height="110" viewBox="0 0 300 110"><rect x="8" y="10" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="30" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">a</text><line x1="62" y1="25" x2="118" y2="25" stroke="#171717" stroke-width="1.3"/><rect x="120" y="6" width="150" height="38" rx="8" fill="#fff" stroke="#171717" stroke-width="1.3"/><text x="195" y="30" text-anchor="middle" font-family="JetBrains Mono" font-size="15">[1, 4, 3]</text><rect x="8" y="70" width="52" height="30" rx="15" fill="var(--hl)"/><text x="34" y="90" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="14">b</text><line x1="62" y1="85" x2="118" y2="85" stroke="#171717" stroke-width="1.3"/><rect x="120" y="66" width="150" height="38" rx="8" fill="#fff" stroke="#171717" stroke-width="1.3"/><text x="195" y="90" text-anchor="middle" font-family="JetBrains Mono" font-size="15">[1, 2, 3]</text></svg>`,
       more: { q: "안에 리스트가 들어 있어도 그대로일까?", a: "아니다. <code>a[:]</code>는 얕은 복사라 안쪽 리스트는 같이 쓴다. 안쪽까지 나누려면 <code>copy.deepcopy(a)</code>를 쓴다." } },
     { unit: "2-9", question: "실행하면 무엇이 출력될까?", code: "a, b = 3, 5\na, b = b, a\nprint(a, b)",
       options: ["3 5", "5 3", "5 5"], answer: 1,
-      explain: "오른쪽 <code>b, a</code>의 값을 먼저 다 꺼내 둔 다음 왼쪽에 넣는다. 그래서 값을 잃지 않고 맞바뀐다." }
+      explain: "오른쪽 <code>b, a</code>를 먼저 계산해서 (5, 3)을 만들어 둔 다음, 왼쪽 <code>a</code>와 <code>b</code>에 차례로 넣는다. 그래서 <code>a</code>는 5, <code>b</code>는 3이 되어 값을 잃지 않고 맞바뀐다." }
   ]
 };
