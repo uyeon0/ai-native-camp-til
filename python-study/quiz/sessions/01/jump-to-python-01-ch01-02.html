@@ -126,8 +126,19 @@ details.deep pre.code{background:var(--codebg)}
 .ide .hd .sp{margin-left:auto}
 .ide .st{font:500 11px var(--sans);color:var(--muted)}
 .ide textarea{flex:1;border:none;background:transparent;font:13px/1.8 var(--mono);padding:14px 16px;resize:none;outline:none;min-width:var(--ide);color:#1f1f1f;tab-size:4}
-.ide .out{height:200px;flex:none;border-top:1px solid var(--line);padding:12px 16px;font:13px/1.6 var(--mono);background:var(--bg);overflow:auto;white-space:pre-wrap;min-width:var(--ide)}
-.ide .out small{display:block;font:600 11px var(--sans);color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+.ide .out{height:200px;flex:none;border-top:1px solid var(--line);padding:12px 16px;font:13px/1.6 var(--mono);background:#f7f7f7;overflow:auto;white-space:pre-wrap;min-width:var(--ide)}
+.ide small{display:flex;gap:10px;align-items:baseline;font:600 11px var(--sans);color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+.ide small em{font-style:normal;font-weight:500;letter-spacing:0}
+.ide .io{flex:none;border-top:1px solid var(--line);padding:10px 16px;background:var(--bg);min-width:var(--ide)}
+.ide .io textarea,.ide .io input{display:block;width:100%;min-width:0;border:none;background:transparent;font:13px/1.6 var(--mono);padding:0;outline:none;color:#1f1f1f}
+.ide .io textarea{flex:none;height:64px}
+/* 적는 칸(코드·입력·인수)은 흰 바탕에 같은 이름표, 누르면 왼쪽 세로줄. 출력만 회색 바탕. */
+.ide .fld{background:var(--bg);box-shadow:inset 3px 0 0 transparent;transition:box-shadow .12s}
+.ide .fld:focus-within{box-shadow:inset 3px 0 0 var(--ink)}
+.ide .fld.code{flex:1;display:flex;flex-direction:column;padding-top:12px;min-width:var(--ide)}
+.ide .fld.code small{padding:0 16px;margin:0}
+.ide .fld.code textarea{padding-top:6px}
+.ide .fld ::placeholder{color:var(--faint)}
 .ide .err{color:#b42318}
 </style>
 </head>
@@ -151,7 +162,9 @@ details.deep pre.code{background:var(--codebg)}
   </div>
   <aside class="ide" id="ide" aria-label="Python 실행기">
     <div class="hd">Python <span class="st" id="ideSt"></span><button class="sp btn" id="clear">비우기</button><button class="btn p" id="runBtn">▶ 실행</button></div>
-    <textarea id="ed" spellcheck="false" placeholder=""></textarea>
+    <div class="fld code"><small>코드</small><textarea id="ed" spellcheck="false" placeholder=""></textarea></div>
+    <div class="io fld" id="inBox"><small>입력 <em>한 줄에 하나씩, 실행하기 전에 적는다</em></small><textarea id="stdin" placeholder="예: spam&#10;    eggs" spellcheck="false" aria-label="입력"></textarea></div>
+    <div class="io fld" id="argBox"><small>인수 <em>sys.argv로 넘길 값, 띄어쓰기로 구분</em></small><input id="argv" placeholder="예: 1 2 3" spellcheck="false" autocomplete="off" aria-label="인수"></div>
     <div class="out"><small>출력</small><span id="out"></span></div>
   </aside>
 </div>
@@ -1311,9 +1324,12 @@ function toggleIde(v) {
   if (open) ed.focus();
   setTimeout(placeNav, 200);
 }
-function openInIde(code) { ed.value = code.replace(/\n$/, ''); out.textContent = ''; toggleIde(true); }
+// 입력·인수 칸은 늘 펼쳐 둔다. 새 코드가 들어오거나 비우면 함께 비운다.
+const stdinEl = $('stdin'), argvEl = $('argv');
+function clearBoxes() { stdinEl.value = ''; argvEl.value = ''; }
+function openInIde(code) { ed.value = code.replace(/\n$/, ''); out.textContent = ''; clearBoxes(); toggleIde(true); }
 $('pill').onclick = () => toggleIde();
-$('clear').onclick = () => { ed.value = ''; out.textContent = ''; ed.focus(); };
+$('clear').onclick = () => { ed.value = ''; out.textContent = ''; clearBoxes(); ed.focus(); };
 function loadPy() {
   if (loading) return loading;
   $('ideSt').textContent = '불러오는 중…';
@@ -1329,28 +1345,55 @@ function loadPy() {
 async function run() {
   out.textContent = '';
   try { await loadPy(); } catch { return; }
-  const buf = [];
-  py.setStdout({batched: s => buf.push(s)});
-  py.setStderr({batched: s => buf.push(s)});
+  // print는 글자 단위로 받아서 input("이름: ") 뒤에 넣은 값이 같은 줄에 붙게 한다.
+  let text = '';
+  const dec = new TextDecoder();
+  const write = b => { text += dec.decode(b, {stream: true}); return b.length; };
+  py.setStdout({write});
+  py.setStderr({write});
+  // 입력 칸의 값을 한 줄씩 input()에 넘기고, 터미널처럼 넣은 값을 출력에도 적는다.
+  const lines = !stdinEl.value ? [] : stdinEl.value.replace(/\n$/, '').split('\n');
+  let li = 0, short = false;
+  py.setStdin({stdin: () => {
+    if (li < lines.length) { text += lines[li] + '\n'; return lines[li++]; }
+    short = true; return undefined;
+  }});
+  const args = argvEl.value.trim().split(/\s+/).filter(Boolean);
   try {
-    py.globals.set('__name__', '__main__');
-    await py.runPythonAsync(ed.value);   // .py 파일처럼 print 한 것만 보여 준다
-    out.textContent = buf.join('\n');
+    // 실행마다 새로 시작한다: 이전 실행의 변수·함수와 만든 파일을 남기지 않는다.
+    py.runPython(`
+import os, sys, shutil
+os.chdir('/')
+shutil.rmtree('/home/pyodide/run', ignore_errors=True)
+os.makedirs('/home/pyodide/run')
+os.chdir('/home/pyodide/run')
+sys.argv = ['main.py', *${JSON.stringify(args)}]`);
+    const g = py.toPy({__name__: '__main__'});
+    await py.runPythonAsync(ed.value, {globals: g});   // .py 파일처럼 print 한 것만 보여 준다
+    g.destroy();
+    out.textContent = text.replace(/\n$/, '');
   } catch (e) {
-    const msg = String(e.message || e).trim().split('\n');
+    let msg = String(e.message || e).trim().split('\n');
     const i = msg.findIndex(l => l.includes('File "<exec>"'));
-    out.innerHTML = esc(buf.join('\n')) + (buf.length ? '\n' : '') + `<span class="err">${esc((i >= 0 ? msg.slice(i) : msg).join('\n'))}</span>`;
+    msg = i >= 0 ? msg.slice(i) : msg;
+    if (short && /^EOFError/.test(msg[msg.length - 1])) {
+      msg = [`입력값이 모자라요. input()이 ${lines.length + 1}번째 값을 기다렸어요. 입력 칸에 한 줄 더 적어 주세요.`];
+    }
+    out.innerHTML = esc(text) + (text && !text.endsWith('\n') ? '\n' : '') + `<span class="err">${esc(msg.join('\n'))}</span>`;
   }
 }
 $('runBtn').onclick = run;
 ed.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); const p = ed.selectionStart; ed.setRangeText('    ', p, ed.selectionEnd, 'end'); }
+});
+// 편집기·입력·인수 칸 어디서든 ⌘/Ctrl+Enter 로 실행한다.
+for (const el of [ed, stdinEl, argvEl]) el.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); run(); }
 });
 
 /* ---------- 단축키: 문제 화면의 ← → 만 ---------- */
 addEventListener('keydown', e => {
-  if (document.activeElement === ed || $('quiz').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+  if ([ed, stdinEl, argvEl].includes(document.activeElement) || $('quiz').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
   if (e.key === 'ArrowRight' && $('nx') && !$('nx').disabled) $('nx').click();
   else if (e.key === 'ArrowLeft') go(cur - 1);
 });
